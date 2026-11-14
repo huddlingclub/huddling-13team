@@ -1,7 +1,6 @@
-import { useState } from 'react';
-import { QRCodeSVG } from 'qrcode.react';
-import { distanceLine, formatDistance, isMobileDevice, naverSearchUrl, shortCategory, type NearbyStore } from '../lib/stores';
+import { distanceLine, formatDistance, naverSearchUrl, shortCategory, type NearbyStore } from '../lib/stores';
 import { FoodThumb } from './FoodThumb';
+import { useOpenOrderQr } from './OrderQr';
 
 interface StoreRowProps {
   store: NearbyStore;
@@ -13,10 +12,9 @@ interface StoreRowProps {
 export const FOCUS_RING = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30';
 
 // 가게 한 줄. 줄을 누르면 지도(네이버, 없으면 카카오)가 열리고,
-// 배민 링크가 있으면 오른쪽 알약 버튼이 붙는다. PC는 배민 앱이 없으니 버튼이 QR을 펼친다.
+// 오른쪽 "배민 주문" 버튼은 앱 전체에 하나뿐인 QR 창(huddling.club)을 연다.
 export function StoreRow({ store, menu, note }: StoreRowProps) {
-  const [qrOpen, setQrOpen] = useState(false);
-  const mobile = isMobileDevice();
+  const openQr = useOpenOrderQr();
   const accent = Boolean(note);
   const placeUrl = store.naverUrl ?? store.kakaoUrl ?? naverSearchUrl(store.name);
   const sub = shortCategory(store.category);
@@ -29,62 +27,34 @@ export function StoreRow({ store, menu, note }: StoreRowProps) {
       : ' bg-[#F6F6F6] text-black hover:bg-[#EDEDED]');
 
   return (
-    <li>
-      <div className="flex items-center gap-3">
-        <a
-          href={placeUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={'-m-2 flex min-w-0 flex-1 items-center gap-4 rounded-2xl p-2 transition-colors duration-150 hover:bg-black/[0.03] ' + FOCUS_RING}
-        >
-          <FoodThumb menu={menu} />
-          <span className="min-w-0">
-            <span className="block truncate text-[16px] font-semibold leading-[22px] text-black">{store.name}</span>
-            {sub && <span className="mt-0.5 block truncate text-[14px] leading-5 text-[#737373]">{sub}</span>}
-            {meta && (
-              <span
-                className={
-                  'mt-0.5 block text-[13px] leading-[18px] tabular-nums ' +
-                  // 강조 줄은 좁은 화면에서 잘리지 않고 다음 줄로 넘어간다.
-                  (accent ? 'break-keep font-medium text-[#B8507A]' : 'truncate text-[#737373]')
-                }
-              >
-                {meta}
-              </span>
-            )}
-          </span>
-        </a>
-
-        {store.baeminUrl &&
-          (mobile ? (
-            <a href={store.baeminUrl} target="_blank" rel="noopener noreferrer" className={pill}>
-              배민 주문
-            </a>
-          ) : (
-            <button
-              type="button"
-              aria-expanded={qrOpen}
-              aria-controls={'qr-' + store.id}
-              onClick={() => setQrOpen(!qrOpen)}
-              className={pill}
+    <li className="flex items-center gap-3">
+      <a
+        href={placeUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={'-m-2 flex min-w-0 flex-1 items-center gap-4 rounded-2xl p-2 transition-colors duration-150 hover:bg-black/[0.03] ' + FOCUS_RING}
+      >
+        <FoodThumb menu={menu} />
+        <span className="min-w-0">
+          <span className="block truncate text-[16px] font-semibold leading-[22px] text-black">{store.name}</span>
+          {sub && <span className="mt-0.5 block truncate text-[14px] leading-5 text-[#737373]">{sub}</span>}
+          {meta && (
+            <span
+              className={
+                'mt-0.5 block text-[13px] leading-[18px] tabular-nums ' +
+                // 강조 줄은 좁은 화면에서 잘리지 않고 다음 줄로 넘어간다.
+                (accent ? 'break-keep font-medium text-[#B8507A]' : 'truncate text-[#737373]')
+              }
             >
-              배민 주문
-            </button>
-          ))}
-      </div>
+              {meta}
+            </span>
+          )}
+        </span>
+      </a>
 
-      {qrOpen && store.baeminUrl && (
-        <div id={'qr-' + store.id} className="mt-3 flex items-center gap-4 rounded-2xl bg-[#F6F6F6] p-3">
-          <div className="shrink-0 rounded-xl bg-white p-1.5">
-            <QRCodeSVG value={store.baeminUrl} size={88} marginSize={1} fgColor="#000000" title={store.name + ' 배민 링크 QR'} />
-          </div>
-          <p className="text-[13px] leading-5 text-[#3A3A3C]">
-            폰 카메라로 찍으면
-            <br />
-            배민 앱에서 이 가게가 열려요.
-          </p>
-        </div>
-      )}
+      <button type="button" aria-haspopup="dialog" onClick={openQr} className={pill}>
+        배민 주문
+      </button>
     </li>
   );
 }

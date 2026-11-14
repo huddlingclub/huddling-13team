@@ -25,7 +25,7 @@ npm run dev
 ## 기능
 
 - 캔버스로 그린 돌림판이 3초 동안 감속하며 돌고, 12시 방향 포인터가 가리킨 메뉴를 보여 줍니다. 기본 항목은 근처 가게를 나눈 카테고리 10개입니다.
-- 뽑힌 메뉴를 파는 서울스퀘어 근처 가게를 가까운 순으로 보여 줍니다. 가게를 누르면 네이버 지도(네이버 링크가 없으면 카카오맵)가 열리고, 배민 링크가 있는 가게에는 "배민 주문" 버튼이 붙습니다. 폰에서는 이 버튼이 배민 앱을 열고, PC에서는 폰 카메라로 찍을 QR을 펼칩니다.
+- 뽑힌 메뉴를 파는 서울스퀘어 근처 가게를 가까운 순으로 보여 줍니다. 가게를 누르면 네이버 지도(네이버 링크가 없으면 카카오맵)가 열립니다. 가게마다 붙은 "배민 주문" 버튼은 PC와 폰 모두에서 QR 창을 엽니다. QR은 앱 전체에 하나뿐이고 어느 가게에서 눌러도 https://www.huddling.club/ 로 보냅니다(주소는 [components/OrderQr.tsx](components/OrderQr.tsx)의 `ORDER_QR_URL`).
 - 확인한 가게가 없는 메뉴는 "네이버 지도에서 찾기" 버튼으로 "서울역 + 메뉴"를 검색합니다.
 - 처음 돌리기를 누를 때 위치 권한을 묻습니다. 허용하고 서울스퀘어에서 3km 안에 있으면 내 위치에서 가까운 순으로, 아니면 서울스퀘어에서 가까운 순으로 정렬합니다. 위치는 HTTPS 주소나 localhost에서만 받을 수 있습니다.
 - 메뉴는 추가하고, 이름을 눌러 수정하고, 휴지통 버튼으로 지웁니다.
@@ -62,7 +62,7 @@ npm run dev
 2. `npm run stores:categories`를 실행하면 반경 1km 음식점을 카카오 카테고리 검색으로 모두 모아(1,400여 곳, 30초 정도) 카테고리마다 가까운 30곳을 `data/candidates.csv`에 저장합니다. `--radius=1500`, `--per=50`으로 반경과 개수를 바꿉니다.
 3. 김치찌개처럼 메뉴 이름으로 찾으려면 `npm run stores:fetch -- 김치찌개 마라탕`을 실행합니다. 카카오 키워드 검색으로 메뉴당 가까운 45곳을 저장합니다.
 4. `npm run stores:naver`를 실행하면 아직 확인하지 않은 후보를 네이버 지도에서 같은 상호로 찾습니다. 카카오 좌표에서 150m 안에 같은 상호가 있으면 `naver_url`을 채우고 `menu_check`를 적습니다. 메뉴 행은 네이버 메뉴판·상호·분류로 그 메뉴를 파는지도 봅니다. 네이버가 잠시 막으면(429) 기다렸다가 이어서 하고, 300곳에 5~7분 걸립니다. 메뉴별 검색 단어는 [scripts/match-naver.mjs](scripts/match-naver.mjs)의 `MENU_KEYWORDS`에 있습니다.
-5. 배민 앱에서 가게를 찾아 공유하기 → 링크 복사로 받은 `https://s.baemin.com/...` 링크를 `baemin_url`에 붙입니다.
+5. 배민 앱에서 가게를 찾아 공유하기 → 링크 복사로 받은 `https://s.baemin.com/...` 링크를 `baemin_url`에 붙입니다. 지금 화면의 "배민 주문" 버튼은 이 링크 대신 huddling.club QR을 열지만, 링크를 붙여 둔 가게는 메뉴 확인과 상관없이 목록에 나옵니다.
 6. `npm run stores:build`를 실행하면 앱에 보여 줄 가게를 `data/stores.json`으로 저장합니다. 지금은 시연용으로 배민 링크가 빈 가게에 더미 링크(`https://baemin.com/`, 누르면 배민 첫 화면)를 넣습니다. 실제 링크만 쓰려면 [package.json](package.json)의 `stores:build`에서 `--dummy-baemin`을 지웁니다.
 
 | `menu_check` | 뜻 | 앱에 보임 |
@@ -87,7 +87,8 @@ npm run dev
 | `components/RouletteItemEditor.tsx` | 항목 추가·수정·삭제 로직과 목록. 바텀시트와 우측 편집 카드가 함께 씀 |
 | `components/RouletteManager.tsx` | 모바일 바텀시트 |
 | `components/CategoryFeed.tsx` | 데스크톱 우측 목록: 카테고리별 카드, 뽑힌 카드 강조와 스크롤, 메뉴 편집 카드 |
-| `components/StoreList.tsx`, `components/StoreRow.tsx` | 가게 목록과 가게 한 줄(지도 링크, 배민 주문 버튼, PC용 QR). 우측 목록과 모바일 결과 모달이 함께 씀 |
+| `components/StoreList.tsx`, `components/StoreRow.tsx` | 가게 목록과 가게 한 줄(지도 링크, 배민 주문 버튼). 우측 목록과 모바일 결과 모달이 함께 씀 |
+| `components/OrderQr.tsx` | "배민 주문" 버튼이 여는 QR 창. 앱 전체에 하나만 그리고 huddling.club으로 보냄 |
 | `components/FoodThumb.tsx`, `lib/foodStyles.ts` | 카테고리별 썸네일 파스텔과 아이콘. `assets/food/`에 파일이 있으면 그 아이콘을 씀 |
 | `hooks/useIsDesktop.ts` | 1024px 기준 데스크톱 여부 |
 | `hooks/useUserLocation.ts` | 처음 돌릴 때 기기 위치를 한 번 받음 |

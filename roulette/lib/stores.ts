@@ -67,11 +67,3 @@ export function shortCategory(category: string): string {
 export function naverSearchUrl(menu: string): string {
   return 'https://map.naver.com/p/search/' + encodeURIComponent(BASE_LOCATION.searchArea + ' ' + menu.trim());
 }
-
-// 배민 앱을 바로 열 수 있는 기기인지. iPadOS는 데스크톱 Safari처럼 보여서 터치 지점 수로 구분한다.
-export function isMobileDevice(): boolean {
-  return (
-    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-  );
-}
