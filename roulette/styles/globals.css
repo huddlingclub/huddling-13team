@@ -297,20 +297,20 @@ input {
 @keyframes fishCatch {
   0% {
     opacity: 0;
-    transform: translate(13.5cqw, calc(35cqw - 40px)) scale(0.3) rotate(0deg);
+    transform: scale(0.3) rotate(0deg);
   }
   10% {
     opacity: 1;
   }
   55% {
-    transform: translate(4cqw, calc(-20cqw - 40px)) scale(1.1) rotate(280deg);
+    transform: translate(-1cqw, -57cqw) scale(1.1) rotate(280deg);
   }
   80% {
-    transform: translate(0, calc(-12cqw - 40px)) scale(1.05) rotate(350deg);
+    transform: translate(-2cqw, -47cqw) scale(1.05) rotate(350deg);
   }
   100% {
     opacity: 1;
-    transform: translate(0, calc(-14cqw - 40px)) scale(1.35) rotate(360deg);
+    transform: translate(-2cqw, -49cqw) scale(1.35) rotate(360deg);
   }
 }
 

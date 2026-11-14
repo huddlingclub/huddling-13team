@@ -276,14 +276,8 @@ export function MenuFishing({ items, location, onRequestLocation, onEditMenus, o
             </h2>
             <p className="mt-1.5 text-[13px] text-fish-sub">화면을 탭하면 건너뛸 수 있어요</p>
           </div>
-          <img src={iceUrl} alt="" draggable={false} className={PIXEL + ' absolute left-0 w-full max-w-none'} style={{ bottom: '-5.1cqw' }} />
-          <img
-            src={penguinUrl}
-            alt=""
-            draggable={false}
-            className={PIXEL + ' fish-bob absolute'}
-            style={{ left: '17.9cqw', bottom: '38.5cqw', width: '43.6cqw' }}
-          />
+          <IceFloor />
+          <img src={penguinUrl} alt="" draggable={false} className={PIXEL + ' fish-bob absolute'} style={PENGUIN_ON_ICE} />
           <p className="absolute inset-x-0 bottom-5 text-center font-pixel text-[9px] text-fish-navy">TAP TO SKIP</p>
           <button type="button" onClick={() => go('bite')} aria-label="건너뛰기" className={'absolute inset-0 ' + FOCUS} />
         </section>
@@ -300,9 +294,10 @@ export function MenuFishing({ items, location, onRequestLocation, onEditMenus, o
               {pulling ? '무엇이 걸렸을까요?' : bitten ? '찌가 흔들릴 때 탭해서 당겨요' : '조금만 기다려 주세요'}
             </p>
           </div>
+          <IceFloor />
           {bitten && !pulling && (
             // 입질 순간 펭귄 머리 위에 뜨는 느낌표
-            <span aria-hidden="true" className="absolute -translate-x-1/2" style={{ left: '48cqw', top: 'calc(30% - 11cqw)' }}>
+            <span aria-hidden="true" className="absolute -translate-x-1/2" style={ALERT_SPOT}>
               <span className="fish-alert block rounded-md border-2 border-b-4 border-fish-navy bg-[#FFD34D] px-2.5 py-1.5 font-pixel text-[14px] leading-none text-fish-navy">
                 !
               </span>
@@ -313,16 +308,16 @@ export function MenuFishing({ items, location, onRequestLocation, onEditMenus, o
             alt=""
             draggable={false}
             className={PIXEL + ' absolute ' + (pulling ? 'fish-heave' : bitten ? 'fish-shake' : 'fish-bob')}
-            style={{ left: '28.2cqw', top: '30%', width: '43.6cqw' }}
+            style={PENGUIN_ON_ICE}
           />
           {pulling && picked && (
             <>
               <PullSplash />
-              {/* 낚은 메뉴가 줄 끝(물속)에서 튀어나와 한 바퀴 돌며 펭귄 위로 솟는다 */}
+              {/* 낚은 메뉴가 얼음 구멍(줄 끝)에서 튀어나와 한 바퀴 돌며 펭귄 위로 솟는다 */}
               <span
                 aria-hidden="true"
                 className="fish-catch absolute grid size-20 place-items-center"
-                style={{ left: 'calc(50cqw - 40px)', top: '30%' }}
+                style={{ left: 'calc(' + HOLE_X + ' - 40px)', bottom: 'calc(' + HOLE_Y + ' - 40px)' }}
               >
                 <MenuIcon menu={picked.item.text} className="size-20" fallbackClassName="size-12 text-white" />
               </span>
@@ -331,9 +326,9 @@ export function MenuFishing({ items, location, onRequestLocation, onEditMenus, o
           )}
           <div className="absolute inset-x-5 bottom-7">
             <div className={pulling ? 'invisible' : ''}>
-              <p className="mb-2 font-pixel text-[9px] text-white">PULL!</p>
+              <p className="mb-2 font-pixel text-[9px] text-fish-navy">PULL!</p>
               <div className="mb-4">
-                <TimedBar ms={PULL_BAR_MS} />
+                <TimedBar ms={PULL_BAR_MS} track="bg-fish-line" />
               </div>
             </div>
             <button
@@ -755,7 +750,26 @@ function DexScreen({
 }
 
 // 바다 배경. 위쪽은 글자가 잘 보이도록 남색으로 어둡게 덮는다.
-// 끌어올릴 때 줄이 물에 들어간 자리(펭귄 그림의 줄 끝)에서 퍼지는 파문과 위로 튀는 물방울
+// 캐스팅·입질 화면의 빙판 낚시터. 얼음 구멍이 아래 버튼 영역(약 140px) 위에 오도록 빙판을 올리고,
+// 그 아래는 빙판과 같은 눈 색으로 채운다. 펭귄은 구멍 왼쪽에 서고 낚싯줄 끝이 구멍 한가운데로 들어간다.
+// 값은 ice.png(220×227, 어두운 물 x 96~190·y 172~194)와 penguin.png(220×199, 줄 끝 x 178·y 180)에서 계산했다.
+// 부모 section은 [container-type:inline-size]여야 한다(cqw = 화면 폭의 1%).
+const ICE_BOTTOM = 'calc(140px - 15cqw)'; // 구멍 아래 끝이 140px 위에 오게
+const HOLE_X = '52cqw'; // 줄 끝 = 구멍 안
+const HOLE_Y = 'calc(140px + 5cqw)'; // 구멍 세로 가운데(아래에서)
+const PENGUIN_ON_ICE: React.CSSProperties = { left: '16.7cqw', bottom: 'calc(140px + 1.3cqw)', width: '43.6cqw' };
+const ALERT_SPOT: React.CSSProperties = { left: '36.3cqw', bottom: 'calc(140px + 42.7cqw)' }; // 펭귄 머리 위
+
+function IceFloor() {
+  return (
+    <>
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 bg-[#F3F7FB]" style={{ height: 'calc(' + ICE_BOTTOM + ' + 4px)' }} />
+      <img src={iceUrl} alt="" draggable={false} className={PIXEL + ' absolute left-0 w-full max-w-none'} style={{ bottom: ICE_BOTTOM }} />
+    </>
+  );
+}
+
+// 끌어올릴 때 얼음 구멍(줄 끝)에서 퍼지는 파문과 위로 튀는 물방울
 const SPLASH_DROPS: [string, string, string][] = [
   ['-28px', '-30px', '90ms'],
   ['-14px', '-52px', '130ms'],
@@ -766,7 +780,7 @@ const SPLASH_DROPS: [string, string, string][] = [
 
 function PullSplash() {
   return (
-    <span aria-hidden="true" className="absolute size-0" style={{ left: '63.5cqw', top: 'calc(30% + 35cqw)' }}>
+    <span aria-hidden="true" className="absolute size-0" style={{ left: HOLE_X, bottom: HOLE_Y }}>
       <span className="fish-ripple absolute -left-9 -top-3 h-6 w-[72px] rounded-[50%] border-[3px] border-white/85" />
       {SPLASH_DROPS.map(([dx, dy, delay]) => (
         <span
@@ -826,9 +840,9 @@ function MenuIcon({
 }
 
 // 정해진 시간 동안 왼쪽에서 오른쪽으로 차는 막대
-function TimedBar({ ms }: { ms: number }) {
+function TimedBar({ ms, track = 'bg-white/85' }: { ms: number; track?: string }) {
   return (
-    <div className="h-2.5 overflow-hidden rounded-[5px] bg-white/85" aria-hidden="true">
+    <div className={'h-2.5 overflow-hidden rounded-[5px] ' + track} aria-hidden="true">
       <i className="fish-fill block h-full bg-fish-orange" style={{ animationDuration: ms + 'ms' }} />
     </div>
   );
