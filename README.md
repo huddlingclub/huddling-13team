@@ -11,6 +11,7 @@
 
 - 저장소 클론 완료 (2026-11-14 11:03 KST)
 - 컨셉 논의 진행 중
+- 점심메뉴 낚시를 [clipfriends.club/huddling](https://clipfriends.club/huddling/)에 배포함 (마지막 배포 2026-11-14 15:27 KST). 하루 작업은 아래 [작업 기록](#작업-기록-2026-11-14)에 있습니다
 - 최종 업데이트: 2026-11-14 14:00 KST
 
 ## 일정
@@ -161,11 +162,113 @@
 
 | 폴더 | 내용 |
 |---|---|
-| [roulette/](roulette/) | 돌림판 앱 (Vite + React). 점심 메뉴 룰렛의 바탕 |
+| [roulette/](roulette/) | 점심메뉴 낚시 앱 (Vite + React). 돌림판 앱에서 시작했고 [clipfriends.club/huddling](https://clipfriends.club/huddling/)에 배포됨 |
 
 ### 작업 브랜치
 
 - [이수진/에셋-아이콘](https://github.com/huddlingclub/huddling-13team/tree/%EC%9D%B4%EC%88%98%EC%A7%84/%EC%97%90%EC%85%8B-%EC%95%84%EC%9D%B4%EC%BD%98) (이수진, 13:58 KST)
+
+## 작업 기록 (2026-11-14)
+
+오늘 이 저장소에서 한 작업을 커밋, 브랜치, PR, 배포로 모았습니다. 시간은 모두 한국 시간(KST)이고, 커밋 작성자 keepYaoung은 준입니다.
+
+오늘 결과물은 [clipfriends.club/huddling](https://clipfriends.club/huddling/)에 올라간 **점심메뉴 낚시**입니다. 펭귄 퍼디가 얼음 구멍에서 점심 메뉴를 낚아 올리면 그 메뉴를 파는 서울스퀘어 근처 가게를 사진, 거리와 함께 보여 주고, "주문하기"를 누르면 huddling.club으로 가는 QR이 뜹니다. `main`에 `roulette/` 변경이 합쳐지면 GitHub Actions가 자동으로 다시 배포합니다.
+
+### 하루 흐름
+
+| 시간 | 한 일 | 브랜치 · PR |
+|---|---|---|
+| 11:00–11:42 | README를 쓰고, soonr-work-design의 돌림판 앱을 가져와 점심 메뉴 룰렛과 데스크톱 2단 화면으로 바꿈 | `main` |
+| 11:56–13:19 | 서울스퀘어 1km 근처 가게 데이터(카카오로 모으고 네이버로 확인), 카테고리 10개, Cloudflare Worker 배포와 자동 배포 | `joon-infra` · [#1](https://github.com/huddlingclub/huddling-13team/pull/1) |
+| 13:48–14:21 | 우측 카테고리 카드를 만든 뒤 점심메뉴 낚시 한 화면으로 바꾸고, 주문하기를 QR 창으로 | `joon/category-feed` · [#2](https://github.com/huddlingclub/huddling-13team/pull/2) |
+| 13:49 | `/huddling` 전용 펭귄 파비콘 | `main` |
+| 14:33–14:53 | 가게 대표 사진, 탭 제목 "꼬륵 : 낚아낚아 퍼디", 다시 낚시 FAB, 끌어올리기 애니메이션, 데이터 메시지 박스, 홈 검색 스켈레톤 | `joon/store-photos` · [#3](https://github.com/huddlingclub/huddling-13team/pull/3) |
+| 15:01–15:04 | 캐스팅·입질 화면을 빙판 위 얼음 구멍 낚시로 | `joon/ice-fishing` · [#4](https://github.com/huddlingclub/huddling-13team/pull/4) |
+| 15:26–15:27 | 메시지 박스에 화면마다 식사 시간(TIME)과 주변 검색 결과(NEAR) | `joon/note-status` · [#5](https://github.com/huddlingclub/huddling-13team/pull/5) |
+
+### PR
+
+| PR | 브랜치 | 제목 | 열림 → 합침 | 합친 커밋 |
+|---|---|---|---|---|
+| [#1](https://github.com/huddlingclub/huddling-13team/pull/1) | `joon-infra` | 점심 룰렛: 근처 가게 목록과 clipfriends.club/huddling 배포 | 13:06 → 13:19 | `d2c5d10` |
+| [#2](https://github.com/huddlingclub/huddling-13team/pull/2) | `joon/category-feed` | 우측 목록: 카테고리별 카드(참고 디자인 색)와 흰 배경 | 13:49 → 14:21 | `408099c` |
+| [#3](https://github.com/huddlingclub/huddling-13team/pull/3) | `joon/store-photos` | 낚시 화면: 가게 사진, 탭 제목, 다시 낚시 FAB, 끌어올리기 애니메이션, 데이터 메시지 박스 | 14:33 → 14:53 | `10fe7a7` |
+| [#4](https://github.com/huddlingclub/huddling-13team/pull/4) | `joon/ice-fishing` | 낚시 화면: 빙판 위 얼음 구멍에서 낚시하기 | 15:02 → 15:04 | `0535e98` |
+| [#5](https://github.com/huddlingclub/huddling-13team/pull/5) | `joon/note-status` | 메시지 박스: 화면마다 식사 시간과 주변 검색 결과 보여 주기 | 15:27 → 15:27 | `90ec33b` |
+
+PR #2는 연 뒤에도 같은 브랜치에서 작업을 이어 갔습니다. 우측 카드 목록은 결국 빠지고 점심메뉴 낚시 한 화면이 되었고, 준이 이 브랜치를 `main`에 직접 합쳐서(`408099c`) GitHub에는 PR #2가 합쳐진 것으로 표시됩니다.
+
+### 브랜치
+
+| 브랜치 | 만든 사람 | 상태 |
+|---|---|---|
+| `main` | | 배포 기준. 마지막 커밋 `90ec33b` (15:27) |
+| `joon-infra` | 준 | PR #1로 합침 |
+| `joon/category-feed` | 준 | PR #2로 합침 |
+| `joon/store-photos` | 준 | PR #3로 합침 |
+| `joon/ice-fishing` | 준 | PR #4로 합침 |
+| `joon/note-status` | 준 | PR #5로 합침 |
+| [`이수진/에셋-아이콘`](https://github.com/huddlingclub/huddling-13team/tree/%EC%9D%B4%EC%88%98%EC%A7%84/%EC%97%90%EC%85%8B-%EC%95%84%EC%9D%B4%EC%BD%98) | 이수진 | **아직 합치지 않음, PR 없음.** `roulette/public/menu/`에 카테고리 아이콘 10종(96×96 픽셀아트 SVG)이 있음. 지금 앱은 `roulette/assets/fishing/menu/`의 다른 아이콘을 씀 |
+
+합친 브랜치 다섯 개는 원격에 그대로 남아 있습니다.
+
+### 커밋
+
+시간순입니다. 브랜치 칸은 커밋을 처음 올린 브랜치입니다.
+
+| 시간 | 커밋 | 브랜치 | 내용 |
+|---|---|---|---|
+| 11:00 | `4af1c2c` | `main` | 팀 소개와 작업 방법 README 추가 |
+| 11:16 | `4b72777` | `main` | soonr-work-design에서 돌림판 앱 가져오기 |
+| 11:20 | `9dd1502` | `main` | 기본 항목을 점심 메뉴로 변경 |
+| 11:42 | `c73e1f3` | `main` | 데스크톱에서 좌측 앱 + 우측 메뉴 목록 레이아웃 |
+| 11:56 | `b371d43` | `joon-infra` | 서울스퀘어 기준 근처 가게 후보 스크립트와 기기 위치 모듈 |
+| 12:10 | `b107ad8` | `joon-infra` | 뽑힌 메뉴의 근처 가게를 네이버 지도 링크와 배민 주문 버튼으로 보여 주기 |
+| 12:14 | `bfcf1a7` | `joon-infra` | 카카오 401 안내에 클라이언트 시크릿 혼동 추가 |
+| 12:20 | `b321155` | `joon-infra` | 서울스퀘어 반경 1km 메뉴별 후보 가게 217곳 |
+| 12:28 | `a4c6026` | `joon-infra` | 서울스퀘어 1km 메뉴별 5곳에 네이버 링크와 더미 배민 링크 채우기 |
+| 12:41 | `3c9ff78` | `joon-infra` | 카카오 후보를 네이버에서 같은 상호로 찾아 메뉴 확인, 137곳 채우기 |
+| 12:53 | `9e6987d` | `joon-infra` | 서울스퀘어 1km 음식점을 카테고리 10개로 나누고 룰렛 기본 항목으로 쓰기 |
+| 13:06 | `e2ff001` | `joon-infra` | clipfriends.club/huddling에 Cloudflare Worker로 배포, main 푸시 시 자동 배포 |
+| 13:19 | `d2c5d10` | `main` | PR #1 합침 |
+| 13:48 | `11e1c8b` | `joon/category-feed` | 우측 목록을 카테고리별 카드(Morning/Evening Circle 참고)로 바꾸고 흰 배경 적용 |
+| 13:48 | `1b6b7e1` | `이수진/에셋-아이콘` | 점심 메뉴 카테고리 아이콘 10종 추가 (이수진) |
+| 13:49 | `08ab92c` | `main` | /huddling 전용 펭귄 파비콘 |
+| 13:53 | `19db6ca` | `joon/category-feed` | 배민 주문 버튼이 huddling.club으로 가는 QR 하나를 창으로 열기 |
+| 14:10 | `eb0e7ea` | `joon/category-feed` | 좌측 앱을 점심메뉴 낚시 프로토타입(홈~도감, 빈 바다)으로 바꾸기 |
+| 14:18 | `b23839b` | `joon/category-feed` | 우측 목록을 빼고 점심메뉴 낚시 한 화면으로, 주문하기는 QR 모달만 띄우기 |
+| 14:20 | `408099c` | `main` | `joon/category-feed` 합침 (PR #2) |
+| 14:33 | `6d55b8b` | `joon/store-photos` | 가게 목록 썸네일을 각 가게의 네이버 대표 사진으로 |
+| 14:41 | `5cc3fbf` | `joon/store-photos` | 탭 제목 꼬륵, 가게 목록 다시 낚시 FAB, 끌어올리기 애니메이션 보강 |
+| 14:48 | `971cf9b` | `joon/store-photos` | 데스크톱 왼쪽에 화면별 데이터(DB·API) 메시지 박스 |
+| 14:52 | `fd29a45` | `joon/store-photos` | 홈 오늘 바다에 사는 메뉴에 근처 검색 스켈레톤 |
+| 14:53 | `10fe7a7` | `main` | PR #3 합침 |
+| 15:01 | `67d73e4` | `joon/ice-fishing` | 캐스팅·입질 화면을 빙판 위 얼음 구멍 낚시로 |
+| 15:04 | `0535e98` | `main` | PR #4 합침 |
+| 15:26 | `4156589` | `joon/note-status` | 메시지 박스에 화면마다 식사 시간과 주변 검색 결과 붙이기 |
+| 15:27 | `90ec33b` | `main` | PR #5 합침 |
+
+이 밖에 Cursor Agent가 Slack 대화를 이 README에 반영한 커밋 7개가 `main`에 있습니다: `b2157ec`(11:34), `af21d14`(11:57), `776d9e0`(12:27), `ab8aa2b`(12:58), `edaf51e`(13:12), `395fa89`(13:29), `a9556bf`(13:59).
+
+### 배포
+
+`.github/workflows/deploy-roulette.yml`(Deploy roulette)이 `main`의 `roulette/`가 바뀔 때마다 빌드하고 `wrangler deploy`로 Worker `huddling-roulette`에 올립니다. 이 Worker는 `clipfriends.club/huddling`과 `/huddling/*`만 맡고, 도메인의 다른 경로는 기존 앱 그대로입니다. PR #1을 열기 전에 `joon-infra`를 `wrangler deploy`로 한 번 직접 올렸고, 그 뒤로는 모두 Actions가 배포했습니다.
+
+| 시간 | 계기 | 결과 |
+|---|---|---|
+| 13:20 | PR #1 합침 `d2c5d10` | 성공 |
+| 13:49 | 파비콘 커밋 `08ab92c` | 성공 |
+| 14:21 | `joon/category-feed` 합침 `408099c` | 성공 |
+| 14:53 | PR #3 합침 `10fe7a7` | 성공 |
+| 15:04 | PR #4 합침 `0535e98` | 성공 |
+| 15:27 | PR #5 합침 `90ec33b` | 성공 |
+
+### 데이터와 키
+
+- **가게 데이터**: 서울스퀘어(서울 중구 한강대로 416) 반경 1km 음식점 1,421곳을 카카오 로컬 API로 모으고, 네이버 지도에서 같은 가게를 확인한 388줄을 `roulette/data/stores.json`에 넣었습니다. 한 가게가 여러 메뉴에 들어간 경우가 있어 실제 가게는 303곳이고, 384줄에 네이버 대표 사진이 있습니다.
+- **카테고리**: 한식, 중식, 일식, 양식, 분식, 아시안, 고기, 해산물, 패스트푸드, 샐러드 10개(`roulette/data/categories.json`).
+- **주문하기**: 누르면 https://www.huddling.club/ 로 가는 QR 하나를 띄웁니다. 가게 데이터의 배민 링크는 아직 더미(`https://baemin.com/`)입니다.
+- **키**: 카카오 REST API 키는 `roulette/.env.local`에만 있고 git에는 올리지 않았습니다. 배포용 Cloudflare 토큰은 저장소 시크릿 `CLOUDFLARE_API_TOKEN`입니다.
 
 ## 참고 링크 · 디자인
 
