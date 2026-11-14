@@ -22,6 +22,16 @@ npm run dev
 - GitHub Actions 배포에는 저장소 시크릿 `CLOUDFLARE_API_TOKEN`이 필요합니다. Cloudflare 대시보드 → My Profile → API Tokens에서 "Edit Cloudflare Workers" 템플릿으로 만들고(Zone은 `clipfriends.club`), `gh secret set CLOUDFLARE_API_TOKEN --repo huddlingclub/huddling-13team`으로 등록합니다.
 - 손으로 배포하려면 `npx wrangler login` 후 `npm run deploy`를 실행합니다. 평소에는 `main`에 합치는 것으로 배포합니다.
 
+## 공유 미리보기
+
+카카오톡, 슬랙 등에 링크를 붙이면 [public/og-image.png](public/og-image.png)(1200×630)가 미리보기로 나옵니다. 메타 태그는 [index.html](index.html)에 있고, 이미지 원본은 앱의 바다·빙판·펭귄 그림과 메뉴 아이콘을 그대로 써서 그린 [scripts/og-image.html](scripts/og-image.html)입니다. 그림이나 문구를 고친 뒤에는 `roulette` 폴더에서 아래 명령으로 이미지를 다시 만듭니다(Pretendard 글꼴을 CDN에서 받으므로 인터넷이 필요합니다).
+
+```bash
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars --window-size=1200,630 --virtual-time-budget=5000 --screenshot=public/og-image.png scripts/og-image.html
+```
+
+카카오톡은 한 번 읽은 미리보기를 한동안 기억하므로, 이미지를 바꾼 뒤 예전 미리보기가 나오면 [카카오 공유 디버거](https://developers.kakao.com/tool/debugger/sharing)에서 주소의 캐시를 지웁니다.
+
 ## 기능
 
 - 낚싯대를 잡으면 근처에 가게가 있는 메뉴를 모으고(낚시 준비에서 반경과 못 먹는 메뉴를 고름), 펭귄이 낚싯대를 던져 그중 하나를 무작위로 낚아 올립니다. 메뉴는 근처 가게를 나눈 카테고리 10개이고, 카테고리마다 픽셀 아이콘과 대표 요리(한식이면 비빔밥)를 보여 줍니다. "다시 던지기"는 방금 낚은 메뉴를 빼고 고릅니다.
@@ -100,6 +110,7 @@ npm run dev
 | `data/stores.json` | 앱이 보여 주는 확인된 가게. `npm run stores:build`가 만듦 |
 | `scripts/fetch-categories.mjs`, `scripts/fetch-candidates.mjs` | 카카오에서 카테고리별 / 메뉴 이름별 후보 모으기 (공통 함수는 `scripts/kakao.mjs`) |
 | `scripts/match-naver.mjs`, `scripts/fetch-images.mjs`, `scripts/build-stores.mjs` | 네이버에서 같은 가게와 메뉴 확인, 대표 사진 주소 모으기(공통 함수는 `scripts/naver.mjs`), 보여 줄 가게를 `stores.json`으로 내보내기 |
+| `scripts/og-image.html`, `public/og-image.png` | 링크 공유 미리보기 이미지의 원본과 결과물 |
 | `components/BottomSheet.tsx` | 메뉴 편집 바텀시트 껍데기 |
 | `components/ui/input.tsx` | 입력창 ([shadcn/ui](https://ui.shadcn.com/), MIT) |
 | `styles/globals.css` | Pretendard와 픽셀 글꼴(Press Start 2P), 색상 변수, 바텀시트와 낚시 애니메이션. 낚시 색은 `tailwind.config.ts`의 `fish` |
