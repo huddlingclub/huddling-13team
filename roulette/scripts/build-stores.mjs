@@ -7,7 +7,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DUMMY_BAEMIN_URL, parseCsv } from './csv.mjs';
+import { DUMMY_BAEMIN_URL, hasRealBaemin, isShownRow, parseCsv } from './csv.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CSV_PATH = join(ROOT, 'data/candidates.csv');
@@ -15,10 +15,6 @@ const JSON_PATH = join(ROOT, 'data/stores.json');
 
 const looksLikeBaemin = (url) => /^https:\/\/s\.baemin\.com\//.test(url) || url.startsWith('baemin://');
 const looksLikeNaver = (url) => /^https:\/\/(map\.naver\.com|naver\.me|m\.place\.naver\.com)\//.test(url);
-const SHOWN_CHECKS = new Set(['menu', 'name', 'category']);
-const hasRealBaemin = (r) => r.baemin_url !== '' && r.baemin_url !== DUMMY_BAEMIN_URL;
-const isShown = (r) =>
-  (r.naver_url || r.baemin_url) && (!r.menu_check || SHOWN_CHECKS.has(r.menu_check) || hasRealBaemin(r));
 
 // 카카오 분류 끝이 브랜드 이름(예: "한식 > 순대 > 신의주찹쌀순대")이면 네이버 분류("순대,순댓국")를 쓰고,
 // 아니면 대개 더 구체적인 카카오 분류("한식 > 감자탕")를 쓴다.
@@ -34,7 +30,7 @@ const warnings = [];
 let dummyCount = 0;
 let realCount = 0;
 const stores = rows
-  .filter(isShown)
+  .filter(isShownRow)
   .map((r) => {
     let baeminUrl = r.baemin_url;
     if (hasRealBaemin(r)) {
@@ -60,6 +56,8 @@ const stores = rows
       naverUrl: r.naver_url || null,
       baeminUrl: baeminUrl || null,
       kakaoUrl: r.kakao_url || null,
+      // "-"는 fetch-images가 네이버에 사진이 없다고 적어 둔 표시
+      imageUrl: r.image_url && r.image_url !== '-' ? r.image_url : null,
     };
   });
 

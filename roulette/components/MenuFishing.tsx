@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import type { RouletteItem } from '../types';
 import type { UserLocation } from '../lib/location';
-import { distanceLine, naverSearchUrl, shortCategory, type NearbyStore } from '../lib/stores';
+import { distanceLine, naverSearchUrl, shortCategory, storeThumbUrl, type NearbyStore } from '../lib/stores';
 import { foodStyle } from '../lib/foodStyles';
 import {
   DEFAULT_RADIUS,
@@ -553,9 +553,7 @@ function StoreCard({ store, menu, onOrder }: { store: NearbyStore; menu: string;
         rel="noopener noreferrer"
         className={'-m-1 flex min-w-0 flex-1 items-center gap-3 rounded-xl p-1 ' + FOCUS}
       >
-        <span className="grid size-14 shrink-0 place-items-center rounded-xl bg-fish-beige">
-          <MenuIcon menu={menu} className="size-12" />
-        </span>
+        <StorePhoto store={store} menu={menu} />
         <span className="min-w-0 flex-1">
           <b className="block truncate text-[16px] leading-[22px]">{store.name}</b>
           {sub && <span className="mt-1 block truncate text-[12px] text-fish-sub">{sub}</span>}
@@ -573,6 +571,33 @@ function StoreCard({ store, menu, onOrder }: { store: NearbyStore; menu: string;
         주문하기
       </button>
     </li>
+  );
+}
+
+// 가게 카드 썸네일: 그 가게의 네이버 대표 사진(사장님 사진 우선)을 160px로 받아 채운다.
+// 사진이 없거나 불러오지 못하면 카테고리 픽셀 아이콘을 보여 준다.
+function StorePhoto({ store, menu }: { store: NearbyStore; menu: string }) {
+  const [failed, setFailed] = useState(false);
+  const photo = store.imageUrl && !failed ? storeThumbUrl(store.imageUrl) : null;
+  return (
+    <span className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-fish-beige">
+      {photo ? (
+        <img
+          src={photo}
+          alt=""
+          width={56}
+          height={56}
+          loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
+          draggable={false}
+          onError={() => setFailed(true)}
+          className="size-full object-cover"
+        />
+      ) : (
+        <MenuIcon menu={menu} className="size-12" />
+      )}
+    </span>
   );
 }
 

@@ -13,14 +13,11 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseCsv, toCsv } from './csv.mjs';
+import { apolloState, DELAY_MS, sleep } from './naver.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CSV_PATH = join(ROOT, 'data/candidates.csv');
 const CATEGORY_NAMES = new Set(JSON.parse(readFileSync(join(ROOT, 'data/categories.json'), 'utf8')).map((c) => c.name));
-const UA =
-  'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
-const DELAY_MS = 700; // 너무 빠르면 네이버가 429로 막는다
-const RETRY_WAITS_MS = [30_000, 60_000, 120_000];
 const MATCH_RADIUS_M = 150; // 카카오와 네이버 좌표가 이 안이면 같은 가게로 본다
 
 // 메뉴판이나 상호에서 찾을 단어. 없는 메뉴는 메뉴 이름 그대로 찾는다.
@@ -39,7 +36,6 @@ const CATEGORY_KEYWORDS = {
   샐러드: ['샐러드'],
 };
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const compact = (s) => s.toLowerCase().replace(/[\s()·&,.\-_'"]/g, '');
 
 function distanceM(a, b) {
@@ -57,21 +53,6 @@ function sameName(a, b) {
   if (x.includes(y) || y.includes(x)) return true;
   const n = Math.min(4, x.length, y.length);
   return n >= 2 && x.slice(0, n) === y.slice(0, n);
-}
-
-async function apolloState(url) {
-  let res = await fetch(url, { headers: { 'User-Agent': UA } });
-  for (const wait of RETRY_WAITS_MS) {
-    if (res.status !== 429) break;
-    console.log('  네이버가 잠시 막았어요(429). ' + wait / 1000 + '초 뒤 다시 시도해요.');
-    await sleep(wait);
-    res = await fetch(url, { headers: { 'User-Agent': UA } });
-  }
-  if (!res.ok) throw new Error('네이버 ' + res.status + ': ' + url);
-  const html = await res.text();
-  const m = html.match(/window.__APOLLO_STATE__\s*=\s*(\{.*?\});\s*window\./s);
-  if (!m) throw new Error('네이버 페이지 구조가 바뀌었거나 접근이 막혔어요: ' + url);
-  return JSON.parse(m[1]);
 }
 
 async function findNaverPlace(row) {

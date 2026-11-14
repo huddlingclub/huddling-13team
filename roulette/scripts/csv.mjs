@@ -11,6 +11,7 @@ export const CANDIDATE_COLUMNS = [
   'category',
   'naver_name',
   'naver_category',
+  'image_url',
   'road_address',
   'phone',
   'kakao_url',
@@ -22,6 +23,13 @@ export const CANDIDATE_COLUMNS = [
 // 배민 공유 링크를 받기 전까지 stores:build --dummy-baemin이 stores.json에 넣는 자리표시자.
 // 누르면 배민 첫 화면이 열린다. CSV에는 넣지 않는다.
 export const DUMMY_BAEMIN_URL = 'https://baemin.com/';
+
+// 앱에 보여 줄 가게: 네이버나 배민 링크가 있고, 그 메뉴를 판다고 확인됐거나(menu_check가 menu, name, category)
+// 팀원이 배민 실제 링크를 붙인 가게. menu_check가 빈 행은 아직 확인 전이라 링크만 있으면 넣는다.
+const SHOWN_CHECKS = new Set(['menu', 'name', 'category']);
+export const hasRealBaemin = (r) => r.baemin_url !== '' && r.baemin_url !== DUMMY_BAEMIN_URL;
+export const isShownRow = (r) =>
+  Boolean(r.naver_url || r.baemin_url) && (!r.menu_check || SHOWN_CHECKS.has(r.menu_check) || hasRealBaemin(r));
 
 export function parseCsv(text) {
   const src = text.replace(/^\uFEFF/, '');

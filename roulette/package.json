@@ -11,6 +11,7 @@
     "stores:fetch": "node scripts/fetch-candidates.mjs",
     "stores:categories": "node scripts/fetch-categories.mjs",
     "stores:naver": "node scripts/match-naver.mjs",
+    "stores:images": "node scripts/fetch-images.mjs",
     "stores:build": "node scripts/build-stores.mjs --dummy-baemin"
   },
   "dependencies": {

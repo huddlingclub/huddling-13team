@@ -17,4 +17,5 @@ export interface Store {
   naverUrl: string | null;
   baeminUrl: string | null;
   kakaoUrl: string | null;
+  imageUrl: string | null; // 네이버 대표 사진 원본 주소. 앱은 storeThumbUrl로 160px 썸네일을 받는다.
 }

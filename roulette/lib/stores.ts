@@ -67,3 +67,9 @@ export function shortCategory(category: string): string {
 export function naverSearchUrl(menu: string): string {
   return 'https://map.naver.com/p/search/' + encodeURIComponent(BASE_LOCATION.searchArea + ' ' + menu.trim());
 }
+
+// 네이버 이미지 프록시로 160px 정사각 썸네일(64px 칸의 2.5배)을 받는다. 사장님 사진(ldb-phinf)뿐 아니라
+// 리뷰·블로그 사진(pup-review-phinf, blogfiles)도 이 프록시로만 줄여서 받을 수 있다.
+export function storeThumbUrl(url: string): string {
+  return 'https://search.pstatic.net/common/?src=' + encodeURIComponent(url) + '&type=f160_160';
+}
