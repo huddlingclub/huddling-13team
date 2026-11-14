@@ -36,7 +36,9 @@ function parseArgs(argv) {
 }
 
 function explainError(status, body) {
-  if (status === 401) return '키가 잘못됐어요. JavaScript 키가 아니라 REST API 키인지 확인하세요.';
+  if (status === 401) {
+    return '키가 잘못됐어요. [플랫폼 키] → [REST API 키]의 키 값인지 확인하세요. 같은 화면의 클라이언트 시크릿이나 JavaScript 키는 쓰지 않아요.';
+  }
   if (status === 403) return '카카오 앱 설정에서 카카오맵 사용 설정을 켜야 해요.';
   if (status === 429) return '호출 한도를 넘었어요. 잠시 뒤 다시 돌리세요.';
   return body;
