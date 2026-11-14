@@ -10,7 +10,8 @@ export interface UserLocation extends LatLng {
   fromDevice: boolean;
 }
 
-export const BASE_LOCATION: LatLng & { name: string } = base;
+// searchArea: 확인한 가게가 없을 때 네이버 지도 검색어 앞에 붙이는 지역 이름
+export const BASE_LOCATION: LatLng & { name: string; searchArea: string } = base;
 
 // 오차가 이보다 크면 근처 가게를 고르기에 부정확하므로 기준 위치를 쓴다.
 const MAX_ACCURACY_M = 1000;

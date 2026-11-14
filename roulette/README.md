@@ -16,7 +16,10 @@ npm run dev
 
 ## 기능
 
-- 캔버스로 그린 돌림판이 3초 동안 감속하며 돌고, 12시 방향 포인터가 가리킨 항목을 결과 모달로 보여 줍니다.
+- 캔버스로 그린 돌림판이 3초 동안 감속하며 돌고, 12시 방향 포인터가 가리킨 메뉴를 보여 줍니다.
+- 뽑힌 메뉴를 파는 서울스퀘어 근처 가게를 가까운 순으로 보여 줍니다. 가게를 누르면 네이버 지도(네이버 링크가 없으면 카카오맵)가 열리고, 배민 링크가 있는 가게에는 "배민 주문" 버튼이 붙습니다. 폰에서는 이 버튼이 배민 앱을 열고, PC에서는 폰 카메라로 찍을 QR을 펼칩니다.
+- 확인한 가게가 없는 메뉴는 "네이버 지도에서 찾기" 버튼으로 "서울역 + 메뉴"를 검색합니다.
+- 처음 돌리기를 누를 때 위치 권한을 묻습니다. 허용하고 서울스퀘어에서 3km 안에 있으면 내 위치에서 가까운 순으로, 아니면 서울스퀘어에서 가까운 순으로 정렬합니다. 위치는 HTTPS 주소나 localhost에서만 받을 수 있습니다.
 - 메뉴는 추가하고, 이름을 눌러 수정하고, 휴지통 버튼으로 지웁니다.
 - 항목은 브라우저 로컬 스토리지에 저장되어 새로고침해도 유지됩니다.
 
@@ -24,8 +27,8 @@ npm run dev
 
 [kihya 데스크톱](https://m.kihya.com/) 구조를 따릅니다.
 
-- **1024px 이상**: 크림색 배경 위에 좌측 모바일 앱(430px)과 우측 메뉴 목록 카드(340px)를 나란히 둡니다. 메뉴는 우측 카드에서 바로 편집하고, 카드 아래쪽에 최근 결과가 나옵니다. 앱의 "항목 추가하기"를 누르면 우측 입력창으로 이동합니다.
-- **1024px 미만**: 모바일 앱 화면만 보이고, "항목 추가하기"를 누르면 바텀시트에서 편집합니다.
+- **1024px 이상**: 크림색 배경 위에 좌측 모바일 앱(430px)과 우측 열(340px)을 나란히 둡니다. 우측 열 위쪽 카드에 뽑힌 메뉴와 근처 가게가 나오고(결과 모달은 띄우지 않음), 아래쪽 카드에서 메뉴를 바로 편집합니다. 앱의 "항목 추가하기"를 누르면 우측 입력창으로 이동합니다.
+- **1024px 미만**: 모바일 앱 화면만 보이고, 결과 모달에 뽑힌 메뉴와 근처 가게가 나옵니다. "항목 추가하기"를 누르면 바텀시트에서 편집합니다.
 
 ## 근처 가게 데이터
 
@@ -36,7 +39,7 @@ npm run dev
 3. CSV를 구글 시트나 엑셀에서 열고, 가게마다 네이버 지도의 공유 링크를 `naver_url`에, 배민 앱의 공유하기 → 링크 복사로 받은 `https://s.baemin.com/...` 링크를 `baemin_url`에 붙입니다. 메뉴당 3~5곳이면 충분합니다.
 4. `npm run stores:build`를 실행하면 링크가 하나라도 있는 가게만 `data/stores.json`으로 저장합니다.
 
-`stores:fetch`를 다시 실행해도 이미 채운 `naver_url`, `baemin_url`, `note`는 지워지지 않습니다. 앱에서 기기 위치를 받을 때는 [lib/location.ts](lib/location.ts)의 `getUserLocation`을 씁니다. 위치를 받지 못하면 서울스퀘어 좌표를 돌려줍니다.
+`stores:fetch`를 다시 실행해도 이미 채운 `naver_url`, `baemin_url`, `note`는 지워지지 않습니다. `data/stores.json`이 빈 배열이면 모든 메뉴에 "네이버 지도에서 찾기" 버튼만 나옵니다.
 
 ## 파일 구조
 
@@ -46,16 +49,21 @@ npm run dev
 | `components/RouletteWheel.tsx` | 캔버스 돌림판 그리기, 회전 애니메이션, 당첨 항목 계산 |
 | `components/RouletteItemEditor.tsx` | 항목 추가·수정·삭제 로직과 목록. 바텀시트와 우측 카드가 함께 씀 |
 | `components/RouletteManager.tsx` | 모바일 바텀시트 |
-| `components/RouletteSidePanel.tsx` | 데스크톱 우측 메뉴 목록 카드 |
+| `components/RouletteResultPanel.tsx` | 데스크톱 우측 위 카드: 뽑힌 메뉴와 근처 가게 |
+| `components/StoreList.tsx` | 근처 가게 목록, 지도 링크, 배민 주문 버튼과 PC용 QR. 결과 카드와 모바일 결과 모달이 함께 씀 |
+| `components/RouletteSidePanel.tsx` | 데스크톱 우측 아래 메뉴 목록 카드 |
 | `hooks/useIsDesktop.ts` | 1024px 기준 데스크톱 여부 |
+| `hooks/useUserLocation.ts` | 처음 돌릴 때 기기 위치를 한 번 받음 |
 | `lib/location.ts` | 기기 위치 받기, 실패 시 기준 위치, 두 좌표 사이 거리 |
-| `data/base.json` | 기준 위치(서울스퀘어) 좌표 |
+| `lib/stores.ts` | 메뉴별 가게 찾기와 거리순 정렬, 거리·분류 표시, 네이버 검색 링크 |
+| `data/base.json` | 기준 위치(서울스퀘어) 좌표와 검색 지역 이름 |
+| `data/stores.json` | 앱이 보여 주는 확인된 가게. `npm run stores:build`가 만듦 |
 | `scripts/fetch-candidates.mjs`, `scripts/build-stores.mjs` | 근처 가게 후보 CSV 만들기, 확인한 가게를 `stores.json`으로 내보내기 |
 | `components/BottomSheet.tsx`, `components/SimpleModal.tsx` | 바텀시트와 모달 껍데기 |
 | `components/ui/input.tsx` | 입력창 ([shadcn/ui](https://ui.shadcn.com/), MIT) |
 | `styles/globals.css` | Pretendard 폰트, 색상 변수, 바텀시트 애니메이션 |
 
-기술 스택은 Vite 5, React 18, TypeScript, Tailwind CSS 3, lucide-react입니다.
+기술 스택은 Vite 5, React 18, TypeScript, Tailwind CSS 3, lucide-react, qrcode.react입니다.
 
 ## 원본에서 바꾼 점
 
