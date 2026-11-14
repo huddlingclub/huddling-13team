@@ -2,9 +2,10 @@
 # 이 Worker는 clipfriends.club/huddling 아래만 맡으므로 /* 규칙도 이 앱에만 붙는다.
 # 같은 도메인의 다른 앱(로그인 필요)과 origin을 함께 쓰므로, 이 앱에서 외부 스크립트가 돌지 못하게 CSP로 막는다.
 # 외부에서 받는 것은 글꼴(cdn.jsdelivr.net의 Pretendard, Google Fonts의 Press Start 2P)과
-# 가게 사진(네이버 이미지 프록시 search.pstatic.net)뿐이다. 외부 리소스를 새로 쓰면 아래 CSP에 주소를 더한다.
+# 가게 사진(네이버 이미지 프록시 search.pstatic.net), Cloudflare가 자동으로 넣는 방문 통계(Web Analytics)뿐이다.
+# 외부 리소스를 새로 쓰면 아래 CSP에 주소를 더한다.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: https://search.pstatic.net; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: https://search.pstatic.net; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=()
