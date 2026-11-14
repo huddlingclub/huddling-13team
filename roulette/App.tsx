@@ -1,13 +1,12 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { RouletteWheel } from './components/RouletteWheel';
 import { RouletteManager } from './components/RouletteManager';
-import { RouletteSidePanel } from './components/RouletteSidePanel';
-import { RouletteResultPanel, nearbySummary } from './components/RouletteResultPanel';
+import { CategoryFeed } from './components/CategoryFeed';
 import { StoreList } from './components/StoreList';
 import { SimpleModal } from './components/SimpleModal';
 import { useIsDesktop } from './hooks/useIsDesktop';
 import { useUserLocation } from './hooks/useUserLocation';
-import { findNearbyStores } from './lib/stores';
+import { findNearbyStores, nearbySummary } from './lib/stores';
 import { COLORS } from './components/RouletteItemEditor';
 import categories from './data/categories.json';
 import svgPaths from './assets/svgPaths';
@@ -103,6 +102,7 @@ export default function App() {
   const [showResult, setShowResult] = useState(false);
   const [resultKey, setResultKey] = useState(0);
   const [showAddItem, setShowAddItem] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
   const [screenHeight, setScreenHeight] = useState(window.innerHeight);
   const isDesktop = useIsDesktop();
   const panelInputRef = useRef<HTMLInputElement>(null);
@@ -150,10 +150,11 @@ export default function App() {
     }, 100);
   }, [isDesktop]);
 
-  // 데스크톱에서는 우측 패널 입력창으로, 모바일에서는 바텀시트로 항목을 추가한다.
+  // 데스크톱에서는 우측 목록 위에 편집 카드를 열고 입력창으로, 모바일에서는 바텀시트로 항목을 추가한다.
   const handleAddItemClick = () => {
     if (isDesktop) {
-      panelInputRef.current?.focus();
+      setEditorOpen(true);
+      requestAnimationFrame(() => panelInputRef.current?.focus());
     } else {
       setShowAddItem(true);
     }
@@ -189,10 +190,10 @@ export default function App() {
   const styles = getResponsiveStyles();
 
   return (
-    // 데스크톱(1024px 이상): 크림색 배경 위에 좌측 모바일 앱 + 우측 메뉴 목록 (kihya 데스크톱 구조)
-    <div className="min-h-screen lg:flex lg:justify-center lg:gap-6 lg:bg-[#f4e7d4]">
+    // 데스크톱(1024px 이상): 흰 배경 위에 좌측 모바일 앱 + 우측 카테고리별 가게 목록
+    <div className="min-h-screen bg-white lg:flex lg:justify-center lg:gap-10">
     <div 
-      className="bg-white relative w-full min-w-[320px] max-w-[768px] mx-auto h-screen overflow-hidden lg:mx-0 lg:w-[430px] lg:shrink-0 lg:shadow-[0_8px_40px_rgba(110,70,10,0.10)]" 
+      className="bg-white relative w-full min-w-[320px] max-w-[768px] mx-auto h-screen overflow-hidden lg:mx-0 lg:w-[430px] lg:shrink-0 lg:shadow-[0_8px_40px_rgba(0,0,0,0.08)]" 
       data-name="룰렛"
     >
       {/* Background Gradient */}
@@ -313,11 +314,11 @@ export default function App() {
               style={{ backgroundColor: winner?.color || '#E5E5E5' }}
             />
             <p className="text-2xl font-bold mb-1 text-gray-900">{winner?.text || '항목 없음'}</p>
-            {nearby && <p className="text-[14px] leading-5 text-[#7a6f60] tabular-nums">{nearbySummary(nearby)}</p>}
+            {nearby && <p className="text-[14px] leading-5 text-[#737373] tabular-nums">{nearbySummary(nearby)}</p>}
           </div>
           {winner && nearby && (
             <div className="panel-scroll min-h-0 overflow-y-auto px-6">
-              <StoreList menu={winner.text} stores={nearby.stores} />
+              <StoreList menu={winner.text} stores={nearby.stores} firstNote="가장 가까운 곳" />
             </div>
           )}
           <div className="shrink-0 px-6 pt-4 pb-6">
@@ -333,11 +334,17 @@ export default function App() {
     </div>
 
     {isDesktop && (
-      // 우측 열: 위는 뽑힌 메뉴와 근처 가게, 아래는 메뉴 목록
-      <div className="w-[340px] shrink-0 self-start mt-3 max-h-[calc(100vh-24px)] flex flex-col gap-3">
-        <RouletteResultPanel winner={winner} isSpinning={isSpinning} nearby={nearby} resultKey={resultKey} />
-        <RouletteSidePanel items={items} onItemsChange={setItems} inputRef={panelInputRef} />
-      </div>
+      <CategoryFeed
+        items={items}
+        onItemsChange={setItems}
+        winner={winner}
+        isSpinning={isSpinning}
+        resultKey={resultKey}
+        location={location}
+        editorOpen={editorOpen}
+        onEditorOpenChange={setEditorOpen}
+        inputRef={panelInputRef}
+      />
     )}
     </div>
   );

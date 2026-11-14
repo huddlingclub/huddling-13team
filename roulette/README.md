@@ -33,10 +33,11 @@ npm run dev
 
 ## 화면 구조
 
-[kihya 데스크톱](https://m.kihya.com/) 구조를 따릅니다.
+[kihya 데스크톱](https://m.kihya.com/)처럼 좌측에 모바일 앱을 두고, 우측 목록은 Morning/Evening Circle 참고 디자인의 구성과 색을 따릅니다.
 
-- **1024px 이상**: 크림색 배경 위에 좌측 모바일 앱(430px)과 우측 열(340px)을 나란히 둡니다. 우측 열 위쪽 카드에 뽑힌 메뉴와 근처 가게가 나오고(결과 모달은 띄우지 않음), 아래쪽 카드에서 메뉴를 바로 편집합니다. 앱의 "항목 추가하기"를 누르면 우측 입력창으로 이동합니다.
-- **1024px 미만**: 모바일 앱 화면만 보이고, 결과 모달에 뽑힌 메뉴와 근처 가게가 나옵니다. "항목 추가하기"를 누르면 바텀시트에서 편집합니다.
+- **1024px 이상**: 흰 배경 위에 좌측 모바일 앱(430px)과 우측 목록(420px)을 나란히 둡니다. 우측 목록은 회색(`#F6F6F6`) 화면 위에 룰렛 항목마다 흰 카드를 두고 가까운 가게 3곳을 보여 주며, "모두 보기"로 펼칩니다. 가게 줄은 파스텔 썸네일, 이름, 분류, 거리와 도보 시간, 알약 모양 "배민 주문" 버튼으로 되어 있습니다. 돌리면 제목이 "오늘 점심, 중식"처럼 바뀌고, 뽑힌 카테고리 카드로 스크롤해 전부 펼친 뒤 분홍 배지와 가장 가까운 곳 강조로 표시합니다(결과 모달은 띄우지 않음). 제목 옆 연필 버튼이나 앱의 "항목 추가하기"로 목록 위에 메뉴 편집 카드를 엽니다.
+- **1024px 미만**: 모바일 앱 화면만 보이고, 결과 모달에 뽑힌 메뉴와 근처 가게가 같은 가게 줄 모양으로 나옵니다. "항목 추가하기"를 누르면 바텀시트에서 편집합니다.
+- 썸네일 아이콘은 [assets/food/](assets/food/README.md)에 정해진 이름으로 파일을 넣으면 바뀝니다. 파일이 없으면 카테고리 파스텔 위에 선 아이콘이 나옵니다.
 
 ## 근처 가게 데이터
 
@@ -83,11 +84,11 @@ npm run dev
 |---|---|
 | `App.tsx` | 화면 전체, 항목 상태와 저장, 돌리기 버튼과 결과 모달 |
 | `components/RouletteWheel.tsx` | 캔버스 돌림판 그리기, 회전 애니메이션, 당첨 항목 계산 |
-| `components/RouletteItemEditor.tsx` | 항목 추가·수정·삭제 로직과 목록. 바텀시트와 우측 카드가 함께 씀 |
+| `components/RouletteItemEditor.tsx` | 항목 추가·수정·삭제 로직과 목록. 바텀시트와 우측 편집 카드가 함께 씀 |
 | `components/RouletteManager.tsx` | 모바일 바텀시트 |
-| `components/RouletteResultPanel.tsx` | 데스크톱 우측 위 카드: 뽑힌 메뉴와 근처 가게 |
-| `components/StoreList.tsx` | 근처 가게 목록, 지도 링크, 배민 주문 버튼과 PC용 QR. 결과 카드와 모바일 결과 모달이 함께 씀 |
-| `components/RouletteSidePanel.tsx` | 데스크톱 우측 아래 메뉴 목록 카드 |
+| `components/CategoryFeed.tsx` | 데스크톱 우측 목록: 카테고리별 카드, 뽑힌 카드 강조와 스크롤, 메뉴 편집 카드 |
+| `components/StoreList.tsx`, `components/StoreRow.tsx` | 가게 목록과 가게 한 줄(지도 링크, 배민 주문 버튼, PC용 QR). 우측 목록과 모바일 결과 모달이 함께 씀 |
+| `components/FoodThumb.tsx`, `lib/foodStyles.ts` | 카테고리별 썸네일 파스텔과 아이콘. `assets/food/`에 파일이 있으면 그 아이콘을 씀 |
 | `hooks/useIsDesktop.ts` | 1024px 기준 데스크톱 여부 |
 | `hooks/useUserLocation.ts` | 처음 돌릴 때 기기 위치를 한 번 받음 |
 | `lib/location.ts` | 기기 위치 받기, 실패 시 기준 위치, 두 좌표 사이 거리 |
