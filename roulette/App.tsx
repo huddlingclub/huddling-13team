@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { MenuFishing, type FishingStatus } from './components/MenuFishing';
 import { DataNote } from './components/DataNote';
 import { RouletteManager } from './components/RouletteManager';
-import { useUserLocation } from './hooks/useUserLocation';
 import { COLORS } from './components/RouletteItemEditor';
 import categories from './data/categories.json';
 import type { RouletteItem } from './types';
@@ -37,7 +36,6 @@ export default function App() {
   const [items, setItems] = useState<RouletteItem[]>(loadItems);
   const [editorOpen, setEditorOpen] = useState(false);
   const [status, setStatus] = useState<FishingStatus | null>(null);
-  const { location, requestLocation } = useUserLocation();
 
   // 항목 변경 시 로컬 스토리지에 저장
   useEffect(() => {
@@ -63,8 +61,6 @@ export default function App() {
       >
         <MenuFishing
           items={items}
-          location={location}
-          onRequestLocation={requestLocation}
           onEditMenus={() => setEditorOpen(true)}
           onStatusChange={setStatus}
         />

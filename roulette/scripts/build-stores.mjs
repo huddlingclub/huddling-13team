@@ -43,7 +43,7 @@ const stores = rows
       baeminUrl = '';
     }
     if (r.naver_url && !looksLikeNaver(r.naver_url)) warnings.push(r.name + ': 네이버 링크 형식이 낯설어요 (' + r.naver_url + ')');
-    if (!r.lat || !r.lng) warnings.push(r.name + ': 좌표가 없어서 사용자 위치 기준 정렬에서 맨 뒤로 가요');
+    if (!r.lat || !r.lng) warnings.push(r.name + ': 좌표가 없어서 거리순 정렬에서 맨 뒤로 가요');
     return {
       id: r.menu + '-' + (r.kakao_id || r.name),
       menu: r.menu,
