@@ -1,6 +1,7 @@
 // data/candidates.csv에서 앱에 보여 줄 가게만 골라 data/stores.json을 만든다. 형식은 types.ts의 Store와 같다.
 // 네이버나 배민 링크가 있고, 그 메뉴를 판다고 확인된 가게(menu_check가 menu, name, category)만 넣는다.
 // 팀원이 배민 실제 링크를 붙인 가게는 직접 확인한 것으로 보고 menu_check와 상관없이 넣는다.
+// --dummy-baemin: 배민 링크가 빈 가게에 더미 링크를 넣어 시연 때 배민 버튼이 보이게 한다. CSV는 그대로 둔다.
 //
 // 사용법: npm run stores:build
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -27,14 +28,24 @@ function displayCategory(r) {
   return isBrand && r.naver_category ? r.naver_category : r.category;
 }
 
+const withDummy = process.argv.includes('--dummy-baemin');
 const rows = parseCsv(readFileSync(CSV_PATH, 'utf8'));
 const warnings = [];
-const dummyNames = [];
+let dummyCount = 0;
+let realCount = 0;
 const stores = rows
   .filter(isShown)
   .map((r) => {
-    if (r.baemin_url === DUMMY_BAEMIN_URL) dummyNames.push(r.menu + ' ' + r.name);
-    else if (r.baemin_url && !looksLikeBaemin(r.baemin_url)) warnings.push(r.name + ': 배민 링크 형식이 낯설어요 (' + r.baemin_url + ')');
+    let baeminUrl = r.baemin_url;
+    if (hasRealBaemin(r)) {
+      realCount++;
+      if (!looksLikeBaemin(baeminUrl)) warnings.push(r.name + ': 배민 링크 형식이 낯설어요 (' + baeminUrl + ')');
+    } else if (withDummy) {
+      baeminUrl = DUMMY_BAEMIN_URL;
+      dummyCount++;
+    } else {
+      baeminUrl = '';
+    }
     if (r.naver_url && !looksLikeNaver(r.naver_url)) warnings.push(r.name + ': 네이버 링크 형식이 낯설어요 (' + r.naver_url + ')');
     if (!r.lat || !r.lng) warnings.push(r.name + ': 좌표가 없어서 사용자 위치 기준 정렬에서 맨 뒤로 가요');
     return {
@@ -47,7 +58,7 @@ const stores = rows
       lng: Number(r.lng) || null,
       distanceFromBase: Number(r.distance_m) || null,
       naverUrl: r.naver_url || null,
-      baeminUrl: r.baemin_url || null,
+      baeminUrl: baeminUrl || null,
       kakaoUrl: r.kakao_url || null,
     };
   });
@@ -58,7 +69,5 @@ const counts = {};
 for (const s of stores) counts[s.menu] = (counts[s.menu] ?? 0) + 1;
 const summary = Object.entries(counts).map(([menu, n]) => menu + ' ' + n).join(', ');
 console.log('저장: data/stores.json (' + stores.length + '곳' + (summary ? ': ' + summary : '') + ')');
-if (dummyNames.length > 0) {
-  console.log('  배민 더미 링크 ' + dummyNames.length + '곳: baemin_url을 배민 앱의 공유 링크(https://s.baemin.com/...)로 바꿔 주세요.');
-}
+console.log('  배민 실제 링크 ' + realCount + '곳' + (withDummy ? ', 더미 링크 ' + dummyCount + '곳' : ''));
 for (const w of warnings) console.warn('  확인 필요 · ' + w);

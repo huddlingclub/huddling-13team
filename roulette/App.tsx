@@ -8,21 +8,21 @@ import { SimpleModal } from './components/SimpleModal';
 import { useIsDesktop } from './hooks/useIsDesktop';
 import { useUserLocation } from './hooks/useUserLocation';
 import { findNearbyStores } from './lib/stores';
+import { COLORS } from './components/RouletteItemEditor';
+import categories from './data/categories.json';
 import svgPaths from './assets/svgPaths';
 import type { RouletteItem } from './types';
 
 const ITEMS_KEY = 'rouletteItems';
 const VERSION_KEY = 'rouletteVersion';
-const CURRENT_VERSION = '8.0'; // 로컬 스토리지 초기화 버전. 기본 항목을 바꾸면 올린다.
+const CURRENT_VERSION = '9.0'; // 로컬 스토리지 초기화 버전. 기본 항목을 바꾸면 올린다.
 
-// 기본 점심 메뉴. 색상은 RouletteManager의 COLORS 앞쪽 5개와 같다.
-const DEFAULT_ITEMS: RouletteItem[] = [
-  { id: '1', text: '김치찌개', color: '#FF6B6B' },
-  { id: '2', text: '돈까스', color: '#4ECDC4' },
-  { id: '3', text: '국밥', color: '#45B7D1' },
-  { id: '4', text: '쌀국수', color: '#96CEB4' },
-  { id: '5', text: '샐러드', color: '#FECA57' }
-];
+// 기본 항목은 근처 가게를 나눈 카테고리 10개(data/categories.json). 색은 COLORS 순서대로 하나씩.
+const DEFAULT_ITEMS: RouletteItem[] = categories.map((c, i) => ({
+  id: String(i + 1),
+  text: c.name,
+  color: COLORS[i % COLORS.length],
+}));
 
 // 첫 렌더링 전에 로컬 스토리지에서 항목을 읽는다.
 // effect에서 읽으면 StrictMode의 이중 실행 때 빈 배열이 먼저 저장되어 항목이 초기화된다.

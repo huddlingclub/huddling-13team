@@ -19,8 +19,8 @@ export const CANDIDATE_COLUMNS = [
   'kakao_id',
 ];
 
-// 배민 공유 링크를 받기 전까지 넣어 두는 자리표시자. 누르면 배민 첫 화면이 열린다.
-// stores:build가 이 링크가 남은 가게 수를 알려 준다.
+// 배민 공유 링크를 받기 전까지 stores:build --dummy-baemin이 stores.json에 넣는 자리표시자.
+// 누르면 배민 첫 화면이 열린다. CSV에는 넣지 않는다.
 export const DUMMY_BAEMIN_URL = 'https://baemin.com/';
 
 export function parseCsv(text) {

@@ -1,5 +1,6 @@
 // 후보 가게(data/candidates.csv)를 네이버 지도에서 같은 상호로 찾아 naver_url을 채우고,
 // 그 가게가 뽑힌 메뉴를 실제로 파는지 menu_check에 적는다.
+// 카테고리(한식, 중식 …) 행은 카카오 분류로 이미 나눴으므로 네이버에 있는지만 보고 category로 적는다.
 //   menu: 네이버 메뉴판에 있음 / name: 상호에 있음 / category: 분류가 맞음
 //   no: 메뉴판을 봤는데 없음 / unknown: 네이버에 메뉴판이 없어 판단 못 함
 // stores:build는 menu, name, category인 가게만 앱에 넣는다.
@@ -15,6 +16,7 @@ import { parseCsv, toCsv } from './csv.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CSV_PATH = join(ROOT, 'data/candidates.csv');
+const CATEGORY_NAMES = new Set(JSON.parse(readFileSync(join(ROOT, 'data/categories.json'), 'utf8')).map((c) => c.name));
 const UA =
   'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
 const DELAY_MS = 700; // 너무 빠르면 네이버가 429로 막는다
@@ -82,7 +84,7 @@ async function findNaverPlace(row) {
     await sleep(DELAY_MS);
     const best = Object.values(state)
       .filter((v) => v && v.__typename === 'PlaceListBusinessesItem')
-      .map((v) => ({ id: v.id, name: v.name, d: distanceM(here, { lat: Number(v.y), lng: Number(v.x) }) }))
+      .map((v) => ({ id: v.id, name: v.name, category: v.category ?? '', d: distanceM(here, { lat: Number(v.y), lng: Number(v.x) }) }))
       .filter((v) => v.d <= MATCH_RADIUS_M && sameName(v.name, row.name))
       .sort((a, b) => a.d - b.d)[0];
     if (best) return best;
@@ -116,13 +118,32 @@ const todo = rows.filter((r) => all || !r.menu_check);
 const tally = {};
 let done = 0;
 
+// 같은 가게가 여러 메뉴·카테고리에 나오면 네이버 검색은 한 번만 한다. null은 네이버에 없던 가게.
+const placeByKakaoId = new Map();
+for (const r of rows) {
+  if (all || !r.menu_check) continue;
+  const id = r.naver_url.match(/place\/(\d+)/)?.[1];
+  if (id) placeByKakaoId.set(r.kakao_id, { id, name: r.naver_name, category: r.naver_category });
+  else if (r.menu_check === 'not_found') placeByKakaoId.set(r.kakao_id, null);
+}
+
 console.log('네이버 확인: ' + todo.length + '곳');
 for (const row of todo) {
   const knownId = row.naver_url.match(/place\/(\d+)/)?.[1];
-  const place = knownId ? { id: knownId } : await findNaverPlace(row);
+  const place = knownId
+    ? { id: knownId, name: row.naver_name, category: row.naver_category }
+    : placeByKakaoId.has(row.kakao_id)
+      ? placeByKakaoId.get(row.kakao_id)
+      : await findNaverPlace(row);
+  placeByKakaoId.set(row.kakao_id, place);
   if (!place) {
     row.menu_check = 'not_found';
     row.naver_name = '';
+  } else if (CATEGORY_NAMES.has(row.menu)) {
+    row.naver_url = 'https://map.naver.com/p/entry/place/' + place.id;
+    row.naver_name = place.name;
+    row.naver_category = place.category;
+    row.menu_check = 'category';
   } else {
     const detail = await naverDetail(place.id);
     row.naver_url = 'https://map.naver.com/p/entry/place/' + place.id;
