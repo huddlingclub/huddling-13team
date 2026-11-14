@@ -1,5 +1,4 @@
 import type { RouletteItem } from '../types';
-import type { UserLocation } from './location';
 import { findNearbyStores, type NearbyStore } from './stores';
 
 // 점심메뉴 낚시(좌측 앱) 데이터. 디자인 원본은 팀에서 공유한 menu-fishing.html 프로토타입이다.
@@ -73,7 +72,7 @@ export function timeGreeting(now: Date): Greeting {
   };
 }
 
-// 낚시터 반경(미터). 가게 데이터는 서울스퀘어 1km 안이지만, 기기 위치에서 재면 2km도 의미가 있다.
+// 낚시터 반경(미터). 서울스퀘어에서 잰다. 가게 데이터가 서울스퀘어 1km 안이라 2km는 1km와 같은 가게를 보여 준다.
 export const RADIUS_OPTIONS = [500, 1000, 2000];
 export const DEFAULT_RADIUS = 1000;
 
@@ -87,9 +86,9 @@ export interface SeaMenu {
   known: boolean; // 데이터에 이 메뉴의 가게가 한 곳이라도 있는지
 }
 
-export function seaMenus(items: RouletteItem[], location: UserLocation | null, radius: number): SeaMenu[] {
+export function seaMenus(items: RouletteItem[], radius: number): SeaMenu[] {
   return items.map((item) => {
-    const { stores } = findNearbyStores(item.text, location);
+    const stores = findNearbyStores(item.text);
     return { item, stores: stores.filter((s) => (s.distance ?? Infinity) <= radius), known: stores.length > 0 };
   });
 }

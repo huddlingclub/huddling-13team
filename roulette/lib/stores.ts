@@ -1,21 +1,12 @@
 import storesData from '../data/stores.json';
 import type { Store } from '../types';
-import { BASE_LOCATION, distanceMeters, type UserLocation } from './location';
+import { BASE_LOCATION } from './location';
 
 const STORES = storesData as Store[];
 
-// 가게 데이터는 서울스퀘어 근처뿐이다. 사용자가 이보다 멀리 있으면 기기 위치 거리는 의미가 없어서
-// 서울스퀘어 기준 거리를 보여 준다.
-const NEAR_BASE_M = 3000;
-
+// distance는 서울스퀘어에서 잰 거리(미터)다. 위치가 서울스퀘어로 고정이라 데이터를 만들 때 잰 값을 그대로 쓴다.
 export interface NearbyStore extends Store {
   distance: number | null;
-}
-
-export interface NearbyStores {
-  stores: NearbyStore[];
-  // device: 기기 위치에서 잰 거리, base: 서울스퀘어에서 잰 거리
-  measuredFrom: 'device' | 'base';
 }
 
 // 같은 가게가 여러 메뉴에 들어 있어서(388줄 중 77곳) 가게 수는 이름과 주소가 같으면 한 곳으로 센다.
@@ -25,25 +16,11 @@ export function countStores(stores: Store[]): number {
 
 export const STORE_TOTAL = countStores(STORES);
 
-// 근처 가게를 어디서부터 잴지. 기기 위치를 받았고 서울스퀘어 근처일 때만 기기 위치를 쓴다.
-export function searchOrigin(location: UserLocation | null): NearbyStores['measuredFrom'] {
-  return location?.fromDevice === true && distanceMeters(location, BASE_LOCATION) <= NEAR_BASE_M ? 'device' : 'base';
-}
-
-export function findNearbyStores(menu: string, location: UserLocation | null): NearbyStores {
-  const useDevice = searchOrigin(location) === 'device';
-
-  const stores = STORES.filter((s) => s.menu === menu.trim())
-    .map((s) => ({
-      ...s,
-      distance:
-        useDevice && location && s.lat !== null && s.lng !== null
-          ? distanceMeters(location, { lat: s.lat, lng: s.lng })
-          : s.distanceFromBase,
-    }))
+// 메뉴를 파는 가게를 서울스퀘어에서 가까운 순으로. 좌표가 없는 가게는 맨 뒤로 간다.
+export function findNearbyStores(menu: string): NearbyStore[] {
+  return STORES.filter((s) => s.menu === menu.trim())
+    .map((s) => ({ ...s, distance: s.distanceFromBase }))
     .sort((a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
-
-  return { stores, measuredFrom: useDevice ? 'device' : 'base' };
 }
 
 export function formatDistance(meters: number | null): string {
@@ -57,16 +34,6 @@ export function distanceLine(meters: number | null): string {
   if (meters === null) return '';
   const minutes = Math.max(1, Math.round((meters * 1.3) / 67));
   return formatDistance(meters) + ' · 도보 약 ' + minutes + '분';
-}
-
-export function measuredFromLabel(measuredFrom: NearbyStores['measuredFrom']): string {
-  return measuredFrom === 'device' ? '내 위치' : BASE_LOCATION.name;
-}
-
-export function nearbySummary(nearby: NearbyStores): string {
-  return nearby.stores.length > 0
-    ? measuredFromLabel(nearby.measuredFrom) + '에서 가까운 순 · ' + nearby.stores.length + '곳'
-    : BASE_LOCATION.name + ' 근처';
 }
 
 // "한식 > 찌개,전골" 처럼 저장된 분류에서 마지막 단계만 "찌개, 전골"로 보여 준다.

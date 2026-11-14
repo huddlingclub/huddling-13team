@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import type { RouletteItem } from '../types';
-import type { UserLocation } from '../lib/location';
 import {
   countStores,
   distanceLine,
   naverSearchUrl,
-  searchOrigin,
   shortCategory,
   storeThumbUrl,
   type NearbyStore,
@@ -80,8 +78,7 @@ export interface FishingStatus {
   meal: string; // 기기 시각으로 고른 식사 시간. 예: "늦은 점심"
   checkedAt: string; // 그때 읽은 기기 시각. 예: "14:05"
   searching: boolean; // 홈에 처음 들어와 근처를 검색하는 동안 true
-  origin: 'device' | 'base'; // 근처를 잰 기준: 기기 위치 또는 서울스퀘어
-  radius: number; // 미터
+  radius: number; // 서울스퀘어에서 잰 낚시터 반경(미터)
   menus: number; // 낚을 수 있는 메뉴 수
   stores: number; // 그 메뉴를 파는 반경 안 가게 수
   picked: { menu: string; stores: number; known: boolean } | null; // 낚은 메뉴와 그 메뉴의 반경 안 가게 수
@@ -89,14 +86,11 @@ export interface FishingStatus {
 
 interface MenuFishingProps {
   items: RouletteItem[];
-  location: UserLocation | null;
-  // 기기 위치는 낚싯대를 잡을 때 한 번 묻는다.
-  onRequestLocation: () => void;
   onEditMenus: () => void;
   onStatusChange?: (status: FishingStatus) => void;
 }
 
-export function MenuFishing({ items, location, onRequestLocation, onEditMenus, onStatusChange }: MenuFishingProps) {
+export function MenuFishing({ items, onEditMenus, onStatusChange }: MenuFishingProps) {
   const [screen, setScreen] = useState<Screen>('home');
   const [greeting, setGreeting] = useState(() => timeGreeting(new Date()));
   const [radius, setRadius] = useState(DEFAULT_RADIUS);
@@ -115,14 +109,13 @@ export function MenuFishing({ items, location, onRequestLocation, onEditMenus, o
   const [streak, setStreak] = useState(loadStreak);
   const openQr = useOpenOrderQr();
 
-  const sea = useMemo(() => seaMenus(items, location, radius), [items, location, radius]);
+  const sea = useMemo(() => seaMenus(items, radius), [items, radius]);
   const pool = useMemo(() => sea.filter((m) => !excluded.includes(m.item.id) && catchable(m)), [sea, excluded]);
   const poolRef = useRef(pool);
   poolRef.current = pool;
   const picked = pick ? sea.find((m) => m.item.id === pick.id) ?? null : null;
 
   // 메시지 박스에 알릴 상태. 값이 그대로면 같은 객체라 다시 알리지 않는다.
-  const origin = searchOrigin(location);
   const pickedMenu = picked?.item.text ?? null;
   const pickedStores = picked?.stores.length ?? 0;
   const pickedKnown = picked?.known ?? false;
@@ -132,13 +125,12 @@ export function MenuFishing({ items, location, onRequestLocation, onEditMenus, o
       meal: greeting.meal,
       checkedAt: greeting.checkedAt,
       searching,
-      origin,
       radius,
       menus: pool.length,
       stores: countStores(pool.flatMap((m) => m.stores)),
       picked: pickedMenu === null ? null : { menu: pickedMenu, stores: pickedStores, known: pickedKnown },
     }),
-    [screen, greeting, searching, origin, radius, pool, pickedMenu, pickedStores, pickedKnown],
+    [screen, greeting, searching, radius, pool, pickedMenu, pickedStores, pickedKnown],
   );
   useEffect(() => {
     onStatusChange?.(status);
@@ -191,10 +183,8 @@ export function MenuFishing({ items, location, onRequestLocation, onEditMenus, o
     setPulling(true);
   };
 
-  const startFishing = () => {
-    onRequestLocation();
-    go('collect');
-  };
+  // 위치는 서울스퀘어로 고정이라 권한을 묻지 않고 바로 주변 메뉴를 모은다.
+  const startFishing = () => go('collect');
 
   // 다시 던질 때는 방금 낚은 메뉴를 빼고 고른다(남은 메뉴가 하나뿐이면 그대로).
   const cast = () => {
@@ -253,7 +243,7 @@ export function MenuFishing({ items, location, onRequestLocation, onEditMenus, o
           <div className="relative mx-8 my-auto text-center text-white">
             <MenuIcon menu="해산물" className="fish-shake mx-auto mb-4 size-24" />
             <h2 className="text-[22px] font-bold leading-[1.3]">바다를 살펴보는 중…</h2>
-            <p className="mb-[18px] mt-2 text-[13px] opacity-90">내 위치 근처에 가게가 있는 메뉴만 모으고 있어요</p>
+            <p className="mb-[18px] mt-2 text-[13px] opacity-90">서울스퀘어 근처에 가게가 있는 메뉴만 모으고 있어요</p>
             <TimedBar ms={COLLECT_MS} />
           </div>
         </section>
