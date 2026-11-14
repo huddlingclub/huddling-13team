@@ -162,6 +162,21 @@ html {
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 
+::selection {
+  background-color: #ffe1b3;
+  color: #2a1f12;
+}
+
+input {
+  caret-color: #fe9800;
+}
+
+/* 데스크톱 메뉴 목록 패널 스크롤바 */
+.panel-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #e8dccb transparent;
+}
+
 /* Bottom Sheet Animations */
 @keyframes slideUp {
   from {

@@ -1,14 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { RouletteWheel } from './components/RouletteWheel';
 import { RouletteManager } from './components/RouletteManager';
+import { RouletteSidePanel } from './components/RouletteSidePanel';
 import { SimpleModal } from './components/SimpleModal';
+import { useIsDesktop } from './hooks/useIsDesktop';
 import svgPaths from './assets/svgPaths';
-
-interface RouletteItem {
-  id: string;
-  text: string;
-  color: string;
-}
+import type { RouletteItem } from './types';
 
 const ITEMS_KEY = 'rouletteItems';
 const VERSION_KEY = 'rouletteVersion';
@@ -102,6 +99,8 @@ export default function App() {
   const [showResult, setShowResult] = useState(false);
   const [showAddItem, setShowAddItem] = useState(false);
   const [screenHeight, setScreenHeight] = useState(window.innerHeight);
+  const isDesktop = useIsDesktop();
+  const panelInputRef = useRef<HTMLInputElement>(null);
 
   // 화면 높이 감지
   useEffect(() => {
@@ -139,6 +138,15 @@ export default function App() {
     }, 100);
   }, []);
 
+  // 데스크톱에서는 우측 패널 입력창으로, 모바일에서는 바텀시트로 항목을 추가한다.
+  const handleAddItemClick = () => {
+    if (isDesktop) {
+      panelInputRef.current?.focus();
+    } else {
+      setShowAddItem(true);
+    }
+  };
+
   // 모바일~태블릿 전용 반응형 스타일 계산
   const getResponsiveStyles = () => {
     const isSmallMobile = screenHeight < 600;  // 작은 모바일 (iPhone SE 등)
@@ -169,8 +177,10 @@ export default function App() {
   const styles = getResponsiveStyles();
 
   return (
+    // 데스크톱(1024px 이상): 크림색 배경 위에 좌측 모바일 앱 + 우측 메뉴 목록 (kihya 데스크톱 구조)
+    <div className="min-h-screen lg:flex lg:justify-center lg:gap-6 lg:bg-[#f4e7d4]">
     <div 
-      className="bg-white relative w-full min-w-[320px] max-w-[768px] mx-auto h-screen overflow-hidden" 
+      className="bg-white relative w-full min-w-[320px] max-w-[768px] mx-auto h-screen overflow-hidden lg:mx-0 lg:w-[430px] lg:shrink-0 lg:shadow-[0_8px_40px_rgba(110,70,10,0.10)]" 
       data-name="룰렛"
     >
       {/* Background Gradient */}
@@ -216,7 +226,7 @@ export default function App() {
         
         {/* Add Item Button */}
         <button
-          onClick={() => setShowAddItem(true)}
+          onClick={handleAddItemClick}
           className="bg-[#fff0d9] flex items-center justify-center px-6 py-3.5 rounded-[25px]"
         >
           <span className="text-[#fe9800] text-base font-bold">항목 추가하기</span>
@@ -272,13 +282,15 @@ export default function App() {
         </div>
       </div>
 
-      {/* Add Item Modal */}
-      <RouletteManager 
-        items={items} 
-        onItemsChange={setItems}
-        isOpen={showAddItem}
-        onOpenChange={setShowAddItem}
-      />
+      {/* Add Item Bottom Sheet (모바일) */}
+      {!isDesktop && (
+        <RouletteManager 
+          items={items} 
+          onItemsChange={setItems}
+          isOpen={showAddItem}
+          onOpenChange={setShowAddItem}
+        />
+      )}
 
       {/* Result Modal */}
       <SimpleModal isOpen={showResult} onClose={() => setShowResult(false)} className="w-[90vw] max-w-[400px]">
@@ -297,6 +309,17 @@ export default function App() {
           </button>
         </div>
       </SimpleModal>
+    </div>
+
+    {isDesktop && (
+      <RouletteSidePanel
+        items={items}
+        onItemsChange={setItems}
+        winner={winner}
+        isSpinning={isSpinning}
+        inputRef={panelInputRef}
+      />
+    )}
     </div>
   );
 }

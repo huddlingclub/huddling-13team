@@ -1,10 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-
-interface RouletteItem {
-  id: string;
-  text: string;
-  color: string;
-}
+import { useState, useRef, useEffect } from 'react';
+import type { RouletteItem } from '../types';
 
 interface RouletteWheelProps {
   items: RouletteItem[];
