@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
+    "deploy": "npm run build && wrangler deploy",
     "stores:fetch": "node scripts/fetch-candidates.mjs",
     "stores:categories": "node scripts/fetch-categories.mjs",
     "stores:naver": "node scripts/match-naver.mjs",
@@ -28,6 +29,7 @@
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.9",
     "typescript": "^5.6.2",
-    "vite": "^5.4.8"
+    "vite": "^5.4.8",
+    "wrangler": "^4.162.0"
   }
 }

@@ -1,0 +1,19 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	// 정적 파일만 있는 Worker. clipfriends.club/huddling 아래에서 룰렛을 보여 준다.
+	// clipfriends.club 나머지 경로는 다른 저장소의 Worker(Custom Domain)가 맡고,
+	// 같은 호스트에서는 Route가 Custom Domain보다 먼저 실행되므로 이 두 경로만 여기로 온다.
+	"name": "huddling-roulette",
+	"account_id": "9589fcfb6933c3992b4df76f5b8a75b5",
+	"compatibility_date": "2026-11-01",
+	"workers_dev": false,
+	"routes": [
+		{ "pattern": "clipfriends.club/huddling", "zone_name": "clipfriends.club" },
+		{ "pattern": "clipfriends.club/huddling/*", "zone_name": "clipfriends.club" }
+	],
+	"assets": {
+		"directory": "./dist",
+		// 빌드 결과는 dist 루트에 있고, 공개 주소는 /huddling 아래다. Wrangler 4.148.0 이상 필요.
+		"base_path": "/huddling"
+	}
+}

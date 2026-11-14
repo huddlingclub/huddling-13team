@@ -12,7 +12,15 @@ npm install
 npm run dev
 ```
 
-브라우저에서 http://localhost:5173 을 엽니다. 배포용 빌드는 `npm run build`로 만들고, 결과물은 `dist/`에 생깁니다.
+브라우저에서 http://localhost:5173/huddling/ 을 엽니다. 라이브와 같은 경로에서 돌도록 기준 경로를 `/huddling/`로 맞춰 두었습니다. 배포용 빌드는 `npm run build`로 만들고, 결과물은 `dist/`에 생깁니다.
+
+## 배포
+
+라이브 주소는 https://clipfriends.club/huddling 입니다. `main`에 `roulette/` 변경이 합쳐지면 GitHub Actions([deploy-roulette.yml](../.github/workflows/deploy-roulette.yml))가 빌드해서 Cloudflare Worker `huddling-roulette`로 배포합니다. `main`에 있는 룰렛이 곧 라이브입니다.
+
+- [wrangler.jsonc](wrangler.jsonc): 정적 파일만 있는 Worker입니다. `clipfriends.club/huddling`과 `clipfriends.club/huddling/*` 두 경로만 맡고, `assets.base_path`로 `dist/`를 `/huddling` 아래에 올립니다. `clipfriends.club`의 나머지 경로는 다른 저장소의 Worker가 맡으며, 같은 호스트에서는 Route가 Custom Domain보다 먼저 실행되어 서로 간섭하지 않습니다.
+- GitHub Actions 배포에는 저장소 시크릿 `CLOUDFLARE_API_TOKEN`이 필요합니다. Cloudflare 대시보드 → My Profile → API Tokens에서 "Edit Cloudflare Workers" 템플릿으로 만들고(Zone은 `clipfriends.club`), `gh secret set CLOUDFLARE_API_TOKEN --repo huddlingclub/huddling-13team`으로 등록합니다.
+- 손으로 배포하려면 `npx wrangler login` 후 `npm run deploy`를 실행합니다. 평소에는 `main`에 합치는 것으로 배포합니다.
 
 ## 기능
 
