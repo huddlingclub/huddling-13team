@@ -64,13 +64,10 @@ interface MenuFishingProps {
   location: UserLocation | null;
   // 기기 위치는 낚싯대를 잡을 때 한 번 묻는다.
   onRequestLocation: () => void;
-  // 낚싯대를 던지면 우측 목록이 "고르는 중…"이 되고, 낚아 올리면 그 카테고리로 스크롤한다.
-  onCastStart: () => void;
-  onCatch: (item: RouletteItem) => void;
   onEditMenus: () => void;
 }
 
-export function MenuFishing({ items, location, onRequestLocation, onCastStart, onCatch, onEditMenus }: MenuFishingProps) {
+export function MenuFishing({ items, location, onRequestLocation, onEditMenus }: MenuFishingProps) {
   const [screen, setScreen] = useState<Screen>('home');
   const [greeting, setGreeting] = useState(() => timeGreeting(new Date()));
   const [radius, setRadius] = useState(DEFAULT_RADIUS);
@@ -132,15 +129,10 @@ export function MenuFishing({ items, location, onRequestLocation, onCastStart, o
     if (pool.length === 0) return go('empty');
     const choices = pick && pool.length > 1 ? pool.filter((m) => m.item.id !== pick.id) : pool;
     setPick(choices[Math.floor(Math.random() * choices.length)].item);
-    onCastStart();
     go('cast');
   };
 
-  const pull = () => {
-    if (pick) onCatch(pick);
-    go('result');
-  };
-
+  // "주문하기"는 QR 창만 띄우고 가게 목록에 머문다. 낚은 메뉴는 도감과 연속 기록에 쌓인다.
   const order = () => {
     openQr();
     if (pick && !dex.includes(pick.text)) {
@@ -149,7 +141,6 @@ export function MenuFishing({ items, location, onRequestLocation, onCastStart, o
       saveDex(next);
     }
     setStreak((prev) => recordStreak(prev, new Date()));
-    go('dex');
   };
 
   const toggleExcluded = (id: string) =>
@@ -284,7 +275,7 @@ export function MenuFishing({ items, location, onRequestLocation, onCastStart, o
             <div className="mb-4">
               <TimedBar ms={PULL_BAR_MS} />
             </div>
-            <button type="button" onClick={pull} className={BTN + ' border-[#7A1E17] bg-[#E5483B] text-white hover:brightness-110'}>
+            <button type="button" onClick={() => go('result')} className={BTN + ' border-[#7A1E17] bg-[#E5483B] text-white hover:brightness-110'}>
               탭해서 당기기!
             </button>
           </div>

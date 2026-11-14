@@ -1,8 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { MenuFishing } from './components/MenuFishing';
 import { RouletteManager } from './components/RouletteManager';
-import { CategoryFeed } from './components/CategoryFeed';
-import { useIsDesktop } from './hooks/useIsDesktop';
 import { useUserLocation } from './hooks/useUserLocation';
 import { COLORS } from './components/RouletteItemEditor';
 import categories from './data/categories.json';
@@ -36,13 +34,7 @@ function loadItems(): RouletteItem[] {
 
 export default function App() {
   const [items, setItems] = useState<RouletteItem[]>(loadItems);
-  const [isFishing, setIsFishing] = useState(false);
-  const [winner, setWinner] = useState<RouletteItem | null>(null);
-  const [resultKey, setResultKey] = useState(0);
-  const [showAddItem, setShowAddItem] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
-  const isDesktop = useIsDesktop();
-  const panelInputRef = useRef<HTMLInputElement>(null);
   const { location, requestLocation } = useUserLocation();
 
   // 항목 변경 시 로컬 스토리지에 저장
@@ -51,63 +43,23 @@ export default function App() {
     localStorage.setItem(VERSION_KEY, CURRENT_VERSION);
   }, [items]);
 
-  const handleCastStart = useCallback(() => {
-    setIsFishing(true);
-    setWinner(null);
-  }, []);
-
-  // 낚아 올린 메뉴. 데스크톱 우측 목록이 그 카테고리로 스크롤하고 강조한다.
-  const handleCatch = useCallback((item: RouletteItem) => {
-    setIsFishing(false);
-    setWinner(item);
-    setResultKey((k) => k + 1);
-  }, []);
-
-  // 데스크톱에서는 우측 목록 위에 편집 카드를 열고 입력창으로, 모바일에서는 바텀시트로 메뉴를 고친다.
-  const handleEditMenus = () => {
-    if (isDesktop) {
-      setEditorOpen(true);
-      requestAnimationFrame(() => panelInputRef.current?.focus());
-    } else {
-      setShowAddItem(true);
-    }
-  };
-
   return (
-    // 데스크톱(1024px 이상): 흰 배경 위에 좌측 점심메뉴 낚시 앱 + 우측 카테고리별 가게 목록
-    <div className="min-h-screen bg-white lg:flex lg:justify-center lg:gap-10">
+    // 점심메뉴 낚시 한 화면. 데스크톱(1024px 이상)에서는 흰 배경 가운데에 430px 폭으로 둔다.
+    <div className="min-h-screen bg-white">
       <main
-        className="relative mx-auto h-dvh w-full min-w-[320px] max-w-[768px] overflow-hidden bg-[#DCEBFA] lg:mx-0 lg:w-[430px] lg:shrink-0 lg:shadow-[0_8px_40px_rgba(0,0,0,0.08)]"
+        className="relative mx-auto h-dvh w-full min-w-[320px] max-w-[768px] overflow-hidden bg-[#DCEBFA] lg:w-[430px] lg:shadow-[0_8px_40px_rgba(0,0,0,0.08)]"
         data-name="점심메뉴 낚시"
       >
         <MenuFishing
           items={items}
           location={location}
           onRequestLocation={requestLocation}
-          onCastStart={handleCastStart}
-          onCatch={handleCatch}
-          onEditMenus={handleEditMenus}
+          onEditMenus={() => setEditorOpen(true)}
         />
 
-        {/* 메뉴 편집 바텀시트 (모바일) */}
-        {!isDesktop && (
-          <RouletteManager items={items} onItemsChange={setItems} isOpen={showAddItem} onOpenChange={setShowAddItem} />
-        )}
+        {/* 메뉴 편집 바텀시트 */}
+        <RouletteManager items={items} onItemsChange={setItems} isOpen={editorOpen} onOpenChange={setEditorOpen} />
       </main>
-
-      {isDesktop && (
-        <CategoryFeed
-          items={items}
-          onItemsChange={setItems}
-          winner={winner}
-          isSpinning={isFishing}
-          resultKey={resultKey}
-          location={location}
-          editorOpen={editorOpen}
-          onEditorOpenChange={setEditorOpen}
-          inputRef={panelInputRef}
-        />
-      )}
     </div>
   );
 }
