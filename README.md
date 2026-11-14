@@ -11,7 +11,7 @@
 
 - 저장소 클론 완료 (2026-11-14 11:03 KST)
 - 컨셉 논의 진행 중
-- 최종 업데이트: 2026-11-14 12:26 KST
+- 최종 업데이트: 2026-11-14 13:00 KST
 
 ## 일정
 
@@ -56,6 +56,7 @@
 
 - **배경**: 이글루 + 호수
 - **소품**: 낚시대, 양동이
+- **디자인 방향**: 토스 스타일 1페이지 1띵 형태 (준, 12:47 KST)
 - **음식 이미지**:
   - 1차: 픽셀 이미지
   - 추후: Higgsfield로 실사 음식 이미지 전환 고려
@@ -71,7 +72,7 @@
 
 ### 게임·UX 제안
 
-- **뽑기 횟수 제한**: 3회 (SooHee Kim)
+- **뽑기 개수**: 최소 3, 최대 10개 (SooHee Kim, 12:46 KST)
 - **새로 생긴 가게 = 레어 물고기**: 근처에 최근 생긴 가게가 나오면 반짝이는 희귀 등급으로 보여 줌 (김연정)
 - **낚시 준비 단계**: 조건들을 미끼 모양으로 표현 (jhj3697510)
 - **인터넷 연결 실패 시**: 연결이 안 될 때 실패 또는 다른 모션 띄우기 (jhj3697510, 12:12 KST)
@@ -169,3 +170,6 @@
 - [Pinterest 레퍼런스](https://pin.it/1wWvtfXoP): SooHee Kim 제공 비주얼 레퍼런스
 - [SooHee Kim Figma](https://www.figma.com/design/tTieHZTKxCkx7r83I1VRFL/huddling-club-13%EC%A1%B0?node-id=0-1&t=Ua1sE7SxwKBrgTow-1): 팀 피그마 파일
 - [이수진 유저플로우 Figma](https://www.figma.com/design/mXFwcvJ5qChL2YuGdSZi66/%ED%97%88%EB%93%A4%EB%A7%81-%ED%81%B4%EB%9F%BD-%EC%9C%A0%EC%A0%80%ED%94%8C%EB%A1%9C%EC%9A%B0?node-id=0-1&t=JmN0o2OSlLWRwLGb-1): 이 화면에 플로우 정리 예정
+- [SooHee Kim Figma Make: 플로우 기반 화면 생성](https://www.figma.com/make/Rv4DRcyyqOPPp9a67d3v3O/%ED%94%8C%EB%A1%9C%EC%9A%B0-%EA%B8%B0%EB%B0%98-%ED%99%94%EB%A9%B4-%EC%83%9D%EC%84%B1?t=sYNWziFgi39lzf5N-1) (12:46 KST)
+- [SooHee Kim Figma Site](https://mull-bulk-22700610.figma.site) (12:47 KST)
+- 김연정이 Slack에 픽셀 이미지 스타일 레퍼런스 이미지를 공유함 (12:51 KST). 이미지는 Slack에만 있음
