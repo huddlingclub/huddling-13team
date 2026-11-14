@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import type { RouletteItem } from '../types';
 import type { UserLocation } from '../lib/location';
-import { distanceLine, naverSearchUrl, shortCategory, type NearbyStore } from '../lib/stores';
+import { distanceLine, naverSearchUrl, shortCategory, storeThumbUrl, type NearbyStore } from '../lib/stores';
 import { foodStyle } from '../lib/foodStyles';
 import {
   DEFAULT_RADIUS,
@@ -24,11 +24,14 @@ import seaUrl from '../assets/fishing/sea.png';
 import penguinUrl from '../assets/fishing/penguin.png';
 import iceUrl from '../assets/fishing/ice.png';
 
+// 가게 목록 FAB 왼쪽의 펭귄 얼굴. 탭 아이콘(public/favicon-48.png)과 같은 그림이다.
+const faviconUrl = import.meta.env.BASE_URL + 'favicon-48.png';
+
 // 좌측 앱: 점심메뉴 낚시. 펭귄 퍼디가 얼음 구멍에서 메뉴를 낚아 올린다.
 // 화면 흐름과 값은 팀 프로토타입(menu-fishing.html)의 S1~S9, E1을 따른다.
-type Screen = 'home' | 'collect' | 'setup' | 'cast' | 'bite' | 'result' | 'stores' | 'dex' | 'empty';
+export type Screen = 'home' | 'collect' | 'setup' | 'cast' | 'bite' | 'result' | 'stores' | 'dex' | 'empty';
 
-const SCREEN_LABEL: Record<Screen, string> = {
+export const SCREEN_LABEL: Record<Screen, string> = {
   home: '빙산 낚시터',
   collect: '주변 메뉴 모으는 중',
   setup: '낚시 준비',
@@ -44,6 +47,10 @@ const COLLECT_MS = 1600;
 const CAST_MS = 1600;
 const BITE_AT_MS = 900;
 const PULL_BAR_MS = 2200;
+// "탭해서 당기기!"를 누른 뒤 결과까지: 펭귄이 젖히고, 물보라가 튀고, 메뉴가 솟아오른 뒤 반짝인다.
+const PULL_MS = 1250;
+// 처음 홈에 들어오면 "오늘 바다에 사는 메뉴" 자리에 스켈레톤과 "근처를 검색중…"을 이만큼 보여 준다.
+const HOME_SEARCH_MS = 1400;
 
 const BUDGETS = ['1만원 이하', '1~2만원', '상관없음'];
 const SORTS = ['거리순', '배달팁', '평점', '최소주문'];
@@ -65,10 +72,15 @@ interface MenuFishingProps {
   // 기기 위치는 낚싯대를 잡을 때 한 번 묻는다.
   onRequestLocation: () => void;
   onEditMenus: () => void;
+  // 화면이 바뀔 때마다 알린다. 데스크톱 왼쪽 데이터 메시지 박스가 쓴다.
+  onScreenChange?: (screen: Screen) => void;
 }
 
-export function MenuFishing({ items, location, onRequestLocation, onEditMenus }: MenuFishingProps) {
+export function MenuFishing({ items, location, onRequestLocation, onEditMenus, onScreenChange }: MenuFishingProps) {
   const [screen, setScreen] = useState<Screen>('home');
+  useEffect(() => {
+    onScreenChange?.(screen);
+  }, [screen, onScreenChange]);
   const [greeting, setGreeting] = useState(() => timeGreeting(new Date()));
   const [radius, setRadius] = useState(DEFAULT_RADIUS);
   const [budget, setBudget] = useState(BUDGETS[1]);
@@ -76,6 +88,12 @@ export function MenuFishing({ items, location, onRequestLocation, onEditMenus }:
   const [excluded, setExcluded] = useState<string[]>([]);
   const [pick, setPick] = useState<RouletteItem | null>(null);
   const [bitten, setBitten] = useState(false);
+  const [pulling, setPulling] = useState(false);
+  const [searching, setSearching] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setSearching(false), HOME_SEARCH_MS);
+    return () => clearTimeout(t);
+  }, []);
   const [dex, setDex] = useState(loadDex);
   const [streak, setStreak] = useState(loadStreak);
   const openQr = useOpenOrderQr();
@@ -114,10 +132,24 @@ export function MenuFishing({ items, location, onRequestLocation, onEditMenus }:
     }
     if (screen === 'bite') {
       setBitten(false);
+      setPulling(false);
       const t = setTimeout(() => setBitten(true), BITE_AT_MS);
       return () => clearTimeout(t);
     }
   }, [screen]);
+
+  // 끌어올리는 장면이 끝나면 결과로 넘어간다. 움직임 줄이기를 켠 사용자는 기다리지 않는다.
+  useEffect(() => {
+    if (!pulling) return;
+    const t = setTimeout(() => setScreen('result'), PULL_MS);
+    return () => clearTimeout(t);
+  }, [pulling]);
+
+  const pull = () => {
+    if (pulling) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return go('result');
+    setPulling(true);
+  };
 
   const startFishing = () => {
     onRequestLocation();
@@ -168,6 +200,7 @@ export function MenuFishing({ items, location, onRequestLocation, onEditMenus }:
           sea={sea}
           excluded={excluded}
           poolSize={pool.length}
+          searching={searching}
           onStart={startFishing}
           onDex={() => go('dex')}
           onEditMenus={onEditMenus}
@@ -257,26 +290,59 @@ export function MenuFishing({ items, location, onRequestLocation, onEditMenus }:
       )}
 
       {screen === 'bite' && (
-        <section className="relative flex h-full flex-col [container-type:inline-size]">
+        <section className="relative flex h-full flex-col overflow-hidden [container-type:inline-size]">
           <SeaBackdrop />
           <div className="relative mt-6 text-center text-white" aria-live="polite">
-            <h2 className="text-[28px] font-bold leading-[1.3] text-[#FFD34D]">{bitten ? '입질이 왔어요!' : '찌가 흔들려요…'}</h2>
-            <p className="mt-1.5 text-[13px]">{bitten ? '찌가 흔들릴 때 탭해서 당겨요' : '조금만 기다려 주세요'}</p>
+            <h2 className="text-[28px] font-bold leading-[1.3] text-[#FFD34D]">
+              {pulling ? '영차, 끌어올려요!' : bitten ? '입질이 왔어요!' : '찌가 흔들려요…'}
+            </h2>
+            <p className="mt-1.5 text-[13px]">
+              {pulling ? '무엇이 걸렸을까요?' : bitten ? '찌가 흔들릴 때 탭해서 당겨요' : '조금만 기다려 주세요'}
+            </p>
           </div>
+          {bitten && !pulling && (
+            // 입질 순간 펭귄 머리 위에 뜨는 느낌표
+            <span aria-hidden="true" className="absolute -translate-x-1/2" style={{ left: '48cqw', top: 'calc(30% - 11cqw)' }}>
+              <span className="fish-alert block rounded-md border-2 border-b-4 border-fish-navy bg-[#FFD34D] px-2.5 py-1.5 font-pixel text-[14px] leading-none text-fish-navy">
+                !
+              </span>
+            </span>
+          )}
           <img
             src={penguinUrl}
             alt=""
             draggable={false}
-            className={PIXEL + ' absolute ' + (bitten ? 'fish-shake' : 'fish-bob')}
+            className={PIXEL + ' absolute ' + (pulling ? 'fish-heave' : bitten ? 'fish-shake' : 'fish-bob')}
             style={{ left: '28.2cqw', top: '30%', width: '43.6cqw' }}
           />
+          {pulling && picked && (
+            <>
+              <PullSplash />
+              {/* 낚은 메뉴가 줄 끝(물속)에서 튀어나와 한 바퀴 돌며 펭귄 위로 솟는다 */}
+              <span
+                aria-hidden="true"
+                className="fish-catch absolute grid size-20 place-items-center"
+                style={{ left: 'calc(50cqw - 40px)', top: '30%' }}
+              >
+                <MenuIcon menu={picked.item.text} className="size-20" fallbackClassName="size-12 text-white" />
+              </span>
+              <span aria-hidden="true" className="fish-flash pointer-events-none absolute inset-0 bg-white" />
+            </>
+          )}
           <div className="absolute inset-x-5 bottom-7">
-            <p className="mb-2 font-pixel text-[9px] text-white">PULL!</p>
-            <div className="mb-4">
-              <TimedBar ms={PULL_BAR_MS} />
+            <div className={pulling ? 'invisible' : ''}>
+              <p className="mb-2 font-pixel text-[9px] text-white">PULL!</p>
+              <div className="mb-4">
+                <TimedBar ms={PULL_BAR_MS} />
+              </div>
             </div>
-            <button type="button" onClick={() => go('result')} className={BTN + ' border-[#7A1E17] bg-[#E5483B] text-white hover:brightness-110'}>
-              탭해서 당기기!
+            <button
+              type="button"
+              onClick={pull}
+              disabled={pulling}
+              className={BTN + ' border-[#7A1E17] bg-[#E5483B] text-white hover:brightness-110 disabled:translate-y-0.5'}
+            >
+              {pulling ? '영차!' : '탭해서 당기기!'}
             </button>
           </div>
         </section>
@@ -347,6 +413,7 @@ function HomeScreen({
   sea,
   excluded,
   poolSize,
+  searching,
   onStart,
   onDex,
   onEditMenus,
@@ -355,6 +422,7 @@ function HomeScreen({
   sea: SeaMenu[];
   excluded: string[];
   poolSize: number;
+  searching: boolean;
   onStart: () => void;
   onDex: () => void;
   onEditMenus: () => void;
@@ -384,31 +452,46 @@ function HomeScreen({
         <div className="mx-auto mb-3.5 h-1 w-10 rounded-sm bg-fish-line" />
         <div className="flex items-baseline justify-between">
           <h2 className="text-[14px] font-bold">오늘 바다에 사는 메뉴</h2>
-          <span className="text-[12px] text-fish-sub tabular-nums">
-            {poolSize}종 ·{' '}
-            <button
-              type="button"
-              onClick={onEditMenus}
-              className={'rounded font-semibold text-fish-navy underline underline-offset-2 hover:text-fish-ink ' + FOCUS}
-            >
-              편집
-            </button>
+          <span className="text-[12px] text-fish-sub tabular-nums" aria-live="polite">
+            {searching ? (
+              '근처를 검색중…'
+            ) : (
+              <>
+                {poolSize}종 ·{' '}
+                <button
+                  type="button"
+                  onClick={onEditMenus}
+                  className={'rounded font-semibold text-fish-navy underline underline-offset-2 hover:text-fish-ink ' + FOCUS}
+                >
+                  편집
+                </button>
+              </>
+            )}
           </span>
         </div>
-        <ul className="mb-4 mt-2.5 grid grid-cols-5 gap-2.5">
-          {sea.map((m) => {
-            const out = excluded.includes(m.item.id) || !catchable(m);
-            return (
-              <li
-                key={m.item.id}
-                title={m.item.text}
-                className={'grid h-[58px] place-items-center rounded-xl bg-fish-beige ' + (out ? 'opacity-30' : '')}
-              >
-                <MenuIcon menu={m.item.text} className="size-12" label={m.item.text + (out ? ' (오늘은 없음)' : '')} />
-              </li>
-            );
-          })}
-        </ul>
+        {searching ? (
+          // 메뉴 칸과 같은 수·크기의 빈 칸이 반짝이며, 다 찾으면 같은 자리에 메뉴가 나온다.
+          <ul aria-hidden="true" className="mb-4 mt-2.5 grid grid-cols-5 gap-2.5">
+            {sea.map((m) => (
+              <li key={m.item.id} className="fish-skeleton h-[58px] rounded-xl" />
+            ))}
+          </ul>
+        ) : (
+          <ul className="fish-fade mb-4 mt-2.5 grid grid-cols-5 gap-2.5">
+            {sea.map((m) => {
+              const out = excluded.includes(m.item.id) || !catchable(m);
+              return (
+                <li
+                  key={m.item.id}
+                  title={m.item.text}
+                  className={'grid h-[58px] place-items-center rounded-xl bg-fish-beige ' + (out ? 'opacity-30' : '')}
+                >
+                  <MenuIcon menu={m.item.text} className="size-12" label={m.item.text + (out ? ' (오늘은 없음)' : '')} />
+                </li>
+              );
+            })}
+          </ul>
+        )}
         <div className="mt-1.5 flex gap-2.5">
           <button type="button" onClick={onStart} className={BTN_PRIMARY + ' flex-1'}>
             낚싯대 잡기
@@ -430,9 +513,9 @@ function ResultScreen({ menu, onEat, onRecast }: { menu: SeaMenu; onEat: () => v
       <SeaBackdrop shade={false} />
       <div className="absolute inset-0 bg-[rgba(14,26,51,0.55)]" />
       <div className="panel-scroll relative min-h-0 flex-1 overflow-y-auto px-6 pb-4 pt-6">
-        <div className={CARD + ' fish-fade text-center'}>
+        <div className={CARD + ' fish-pop text-center'}>
           <p className="text-[14px] font-bold text-fish-orange">오늘의 점심이 걸렸어요!</p>
-          <div className="mx-auto my-4 grid size-[200px] place-items-center rounded-3xl bg-fish-beige">
+          <div className="fish-wiggle mx-auto my-4 grid size-[200px] place-items-center rounded-3xl bg-fish-beige">
             <MenuIcon menu={menu.item.text} className="size-44" fallbackClassName="size-20 text-fish-ink" />
           </div>
           <h2 className="text-[30px] font-bold leading-[1.3]">{dish}</h2>
@@ -478,7 +561,7 @@ function StoresScreen({
   const { dish } = menuArt(name);
   const count = menu.stores.length;
   return (
-    <section className="flex h-full flex-col bg-[#F6F8FB]">
+    <section className="relative flex h-full flex-col bg-[#F6F8FB]">
       <div className="px-3 pt-5">
         <button
           type="button"
@@ -509,7 +592,8 @@ function StoresScreen({
       </div>
 
       {count > 0 ? (
-        <ul className="panel-scroll min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-3">
+        // 아래 여백은 떠 있는 "다시 낚시할래요" 버튼에 마지막 가게가 가리지 않게 한다.
+        <ul className="panel-scroll min-h-0 flex-1 space-y-3 overflow-y-auto px-5 pb-28">
           {menu.stores.map((store) => (
             <StoreCard key={store.id} store={store} menu={name} onOrder={onOrder} />
           ))}
@@ -532,12 +616,19 @@ function StoresScreen({
         </div>
       )}
 
-      <div className="flex items-center justify-between gap-3 border-t border-fish-line bg-white px-5 pb-6 pt-4">
-        <span className="text-[13px] font-semibold text-fish-sub">마음에 안 들면?</span>
-        <button type="button" onClick={onRecast} className={BTN_SECONDARY + ' !h-12 !w-[170px]'}>
-          다시 던지기
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={onRecast}
+        className={
+          'absolute bottom-6 left-1/2 z-10 flex h-14 -translate-x-1/2 items-center gap-2.5 whitespace-nowrap rounded-full border-2 border-b-4 border-[#141A33] bg-fish-navy pl-2 pr-5 text-[16px] font-bold text-white shadow-[0_10px_24px_rgba(20,26,51,0.3)] transition-[transform,filter] duration-100 hover:brightness-125 active:translate-y-0.5 ' +
+          FOCUS
+        }
+      >
+        <span className="grid size-10 place-items-center rounded-full bg-white">
+          <img src={faviconUrl} alt="" width={30} height={30} draggable={false} className={PIXEL + ' size-[30px]'} />
+        </span>
+        다시 낚시할래요
+      </button>
     </section>
   );
 }
@@ -553,9 +644,7 @@ function StoreCard({ store, menu, onOrder }: { store: NearbyStore; menu: string;
         rel="noopener noreferrer"
         className={'-m-1 flex min-w-0 flex-1 items-center gap-3 rounded-xl p-1 ' + FOCUS}
       >
-        <span className="grid size-14 shrink-0 place-items-center rounded-xl bg-fish-beige">
-          <MenuIcon menu={menu} className="size-12" />
-        </span>
+        <StorePhoto store={store} menu={menu} />
         <span className="min-w-0 flex-1">
           <b className="block truncate text-[16px] leading-[22px]">{store.name}</b>
           {sub && <span className="mt-1 block truncate text-[12px] text-fish-sub">{sub}</span>}
@@ -573,6 +662,33 @@ function StoreCard({ store, menu, onOrder }: { store: NearbyStore; menu: string;
         주문하기
       </button>
     </li>
+  );
+}
+
+// 가게 카드 썸네일: 그 가게의 네이버 대표 사진(사장님 사진 우선)을 160px로 받아 채운다.
+// 사진이 없거나 불러오지 못하면 카테고리 픽셀 아이콘을 보여 준다.
+function StorePhoto({ store, menu }: { store: NearbyStore; menu: string }) {
+  const [failed, setFailed] = useState(false);
+  const photo = store.imageUrl && !failed ? storeThumbUrl(store.imageUrl) : null;
+  return (
+    <span className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-xl bg-fish-beige">
+      {photo ? (
+        <img
+          src={photo}
+          alt=""
+          width={56}
+          height={56}
+          loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
+          draggable={false}
+          onError={() => setFailed(true)}
+          className="size-full object-cover"
+        />
+      ) : (
+        <MenuIcon menu={menu} className="size-12" />
+      )}
+    </span>
   );
 }
 
@@ -639,6 +755,30 @@ function DexScreen({
 }
 
 // 바다 배경. 위쪽은 글자가 잘 보이도록 남색으로 어둡게 덮는다.
+// 끌어올릴 때 줄이 물에 들어간 자리(펭귄 그림의 줄 끝)에서 퍼지는 파문과 위로 튀는 물방울
+const SPLASH_DROPS: [string, string, string][] = [
+  ['-28px', '-30px', '90ms'],
+  ['-14px', '-52px', '130ms'],
+  ['2px', '-62px', '110ms'],
+  ['16px', '-48px', '150ms'],
+  ['30px', '-26px', '120ms'],
+];
+
+function PullSplash() {
+  return (
+    <span aria-hidden="true" className="absolute size-0" style={{ left: '63.5cqw', top: 'calc(30% + 35cqw)' }}>
+      <span className="fish-ripple absolute -left-9 -top-3 h-6 w-[72px] rounded-[50%] border-[3px] border-white/85" />
+      {SPLASH_DROPS.map(([dx, dy, delay]) => (
+        <span
+          key={dx}
+          className="fish-drop absolute -left-1 -top-1 size-2 bg-white"
+          style={{ '--dx': dx, '--dy': dy, animationDelay: delay } as React.CSSProperties}
+        />
+      ))}
+    </span>
+  );
+}
+
 function SeaBackdrop({ shade = true }: { shade?: boolean }) {
   return (
     <>

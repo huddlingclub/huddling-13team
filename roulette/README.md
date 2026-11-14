@@ -37,7 +37,7 @@ npm run dev
 낚시 앱 한 화면입니다. 1024px 이상에서는 흰 배경 가운데에 430px 폭으로 두고, 그보다 좁으면 화면 폭(최대 768px)을 채웁니다. 낚아 올린 메뉴의 가게는 앱 안의 가게 화면에 나오고, 메뉴 편집 바텀시트도 앱 폭에 맞춰 열립니다.
 
 - 낚시 앱 화면은 프로토타입의 S1~S9, E1을 따릅니다: 홈(빙산 낚시터와 시간대 문구) → 주변 메뉴 수집 → 낚시 준비 → 캐스팅(탭하면 건너뜀) → 입질 대기 → 낚아 올린 결과 → 가게 목록 → 메뉴 도감, 그리고 낚을 메뉴가 없을 때의 빈 바다. 시간대 문구는 루트 README의 표를 따르고, 배경·펭귄·빙판 그림과 메뉴 픽셀 아이콘은 [assets/fishing/](assets/fishing/)에 있습니다.
-- 썸네일 아이콘은 [assets/food/](assets/food/README.md)에 정해진 이름으로 파일을 넣으면 바뀝니다. 파일이 없으면 카테고리 파스텔 위에 선 아이콘이 나옵니다.
+- 가게 목록의 썸네일은 그 가게의 네이버 대표 사진(사장님 사진 우선)을 네이버 이미지 프록시에서 160px로 받아 씁니다. 사진이 없거나 불러오지 못한 가게는 카테고리 픽셀 아이콘이 나옵니다.
 
 ## 근처 가게 데이터
 
@@ -62,8 +62,9 @@ npm run dev
 2. `npm run stores:categories`를 실행하면 반경 1km 음식점을 카카오 카테고리 검색으로 모두 모아(1,400여 곳, 30초 정도) 카테고리마다 가까운 30곳을 `data/candidates.csv`에 저장합니다. `--radius=1500`, `--per=50`으로 반경과 개수를 바꿉니다.
 3. 김치찌개처럼 메뉴 이름으로 찾으려면 `npm run stores:fetch -- 김치찌개 마라탕`을 실행합니다. 카카오 키워드 검색으로 메뉴당 가까운 45곳을 저장합니다.
 4. `npm run stores:naver`를 실행하면 아직 확인하지 않은 후보를 네이버 지도에서 같은 상호로 찾습니다. 카카오 좌표에서 150m 안에 같은 상호가 있으면 `naver_url`을 채우고 `menu_check`를 적습니다. 메뉴 행은 네이버 메뉴판·상호·분류로 그 메뉴를 파는지도 봅니다. 네이버가 잠시 막으면(429) 기다렸다가 이어서 하고, 300곳에 5~7분 걸립니다. 메뉴별 검색 단어는 [scripts/match-naver.mjs](scripts/match-naver.mjs)의 `MENU_KEYWORDS`에 있습니다.
-5. 배민 앱에서 가게를 찾아 공유하기 → 링크 복사로 받은 `https://s.baemin.com/...` 링크를 `baemin_url`에 붙입니다. 지금 화면의 "배민 주문" 버튼은 이 링크 대신 huddling.club QR을 열지만, 링크를 붙여 둔 가게는 메뉴 확인과 상관없이 목록에 나옵니다.
-6. `npm run stores:build`를 실행하면 앱에 보여 줄 가게를 `data/stores.json`으로 저장합니다. 지금은 시연용으로 배민 링크가 빈 가게에 더미 링크(`https://baemin.com/`, 누르면 배민 첫 화면)를 넣습니다. 실제 링크만 쓰려면 [package.json](package.json)의 `stores:build`에서 `--dummy-baemin`을 지웁니다.
+5. `npm run stores:images`를 실행하면 앱에 보이는 가게의 네이버 대표 사진 주소를 `image_url`에 적습니다. 사장님이 올린 사진을 먼저 쓰고, 없으면 첫 번째 사진을 씁니다. 사진이 없는 가게는 `-`로 적어 다시 묻지 않습니다. 같은 가게는 한 번만 물어서 300곳에 7분 정도 걸립니다.
+6. 배민 앱에서 가게를 찾아 공유하기 → 링크 복사로 받은 `https://s.baemin.com/...` 링크를 `baemin_url`에 붙입니다. 지금 화면의 "배민 주문" 버튼은 이 링크 대신 huddling.club QR을 열지만, 링크를 붙여 둔 가게는 메뉴 확인과 상관없이 목록에 나옵니다.
+7. `npm run stores:build`를 실행하면 앱에 보여 줄 가게를 `data/stores.json`으로 저장합니다. 지금은 시연용으로 배민 링크가 빈 가게에 더미 링크(`https://baemin.com/`, 누르면 배민 첫 화면)를 넣습니다. 실제 링크만 쓰려면 [package.json](package.json)의 `stores:build`에서 `--dummy-baemin`을 지웁니다.
 
 | `menu_check` | 뜻 | 앱에 보임 |
 |---|---|---|
@@ -98,7 +99,7 @@ npm run dev
 | `data/candidates.csv` | 카카오 후보와 네이버 확인 결과, 사람이 채우는 링크 |
 | `data/stores.json` | 앱이 보여 주는 확인된 가게. `npm run stores:build`가 만듦 |
 | `scripts/fetch-categories.mjs`, `scripts/fetch-candidates.mjs` | 카카오에서 카테고리별 / 메뉴 이름별 후보 모으기 (공통 함수는 `scripts/kakao.mjs`) |
-| `scripts/match-naver.mjs`, `scripts/build-stores.mjs` | 네이버에서 같은 가게와 메뉴 확인, 보여 줄 가게를 `stores.json`으로 내보내기 |
+| `scripts/match-naver.mjs`, `scripts/fetch-images.mjs`, `scripts/build-stores.mjs` | 네이버에서 같은 가게와 메뉴 확인, 대표 사진 주소 모으기(공통 함수는 `scripts/naver.mjs`), 보여 줄 가게를 `stores.json`으로 내보내기 |
 | `components/BottomSheet.tsx` | 메뉴 편집 바텀시트 껍데기 |
 | `components/ui/input.tsx` | 입력창 ([shadcn/ui](https://ui.shadcn.com/), MIT) |
 | `styles/globals.css` | Pretendard와 픽셀 글꼴(Press Start 2P), 색상 변수, 바텀시트와 낚시 애니메이션. 낚시 색은 `tailwind.config.ts`의 `fish` |
