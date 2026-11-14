@@ -125,7 +125,7 @@ export function RouletteItemEditor({ items, onItemsChange, variant, inputRef }: 
         onKeyPress={(e) => e.key === 'Enter' && addItem()}
         className={
           isPanel
-            ? 'flex-1 h-11 rounded-lg border-transparent bg-[#faf5ee] px-3.5 text-[15px] text-[#2a1f12] placeholder:text-[#7a6f60] selection:bg-[#ffe1b3] selection:text-[#2a1f12] focus-visible:border-[#fe9800] focus-visible:ring-[3px] focus-visible:ring-[#fe9800]/20'
+            ? 'flex-1 h-11 rounded-full border-transparent bg-[#F6F6F6] px-4 text-[15px] text-black placeholder:text-[#737373] focus-visible:border-black/20 focus-visible:ring-[3px] focus-visible:ring-black/10'
             : 'flex-1 h-12 text-[16px] focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-input focus:shadow-none'
         }
       />
@@ -135,7 +135,7 @@ export function RouletteItemEditor({ items, onItemsChange, variant, inputRef }: 
         aria-label="항목 추가"
         className={
           isPanel
-            ? 'h-11 w-11 bg-[#fe9800] rounded-lg shrink-0 flex items-center justify-center text-white transition-colors duration-150 hover:bg-[#ee8c00] disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-[#fe9800]/30'
+            ? 'h-11 w-11 bg-black rounded-full shrink-0 flex items-center justify-center text-white transition-colors duration-150 hover:bg-[#3A3A3C] disabled:opacity-25 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-black/30'
             : 'h-12 px-4 bg-[#fe9800] rounded-md font-semibold shrink-0 flex items-center justify-center text-white disabled:opacity-50 disabled:cursor-not-allowed transition-none'
         }
       >
@@ -149,7 +149,7 @@ export function RouletteItemEditor({ items, onItemsChange, variant, inputRef }: 
       key={item.id}
       className={
         isPanel
-          ? 'group flex items-center gap-3 -mx-2 px-2 min-h-[48px] rounded-lg transition-colors duration-150 hover:bg-[#fff8ee]'
+          ? 'group flex items-center gap-3 -mx-2 px-2 min-h-[48px] rounded-xl transition-colors duration-150 hover:bg-black/[0.035]'
           : 'flex items-center gap-3 p-3 sm:p-4 border rounded-xl bg-white shadow-sm min-h-[68px]'
       }
     >
@@ -179,7 +179,7 @@ export function RouletteItemEditor({ items, onItemsChange, variant, inputRef }: 
         >
           <span
             className={`block font-medium break-words leading-[22px] ${isPanel ? 'text-[15px] truncate' : 'text-[16px] rounded px-2 -mx-2'} ${
-              isDefaultItem(item.id) ? 'text-gray-300' : isPanel ? 'text-[#2a1f12]' : 'text-gray-900'
+              isDefaultItem(item.id) ? 'text-gray-300' : isPanel ? 'text-[#1d1d1f]' : 'text-gray-900'
             }`}
           >
             {item.text}
@@ -192,7 +192,7 @@ export function RouletteItemEditor({ items, onItemsChange, variant, inputRef }: 
         aria-label={`${item.text} 삭제`}
         className={
           isPanel
-            ? 'h-9 w-9 rounded-lg shrink-0 flex items-center justify-center text-[#8f8373] transition-colors duration-150 hover:text-red-500 hover:bg-red-50 focus-visible:outline-none focus-visible:text-red-500 focus-visible:ring-2 focus-visible:ring-red-200'
+            ? 'h-9 w-9 rounded-full shrink-0 flex items-center justify-center text-[#6e6e73] transition-colors duration-150 hover:text-red-600 hover:bg-red-50 focus-visible:outline-none focus-visible:text-red-600 focus-visible:ring-2 focus-visible:ring-red-200'
             : 'text-red-500 h-10 w-10 p-0 rounded-lg shrink-0 flex items-center justify-center transition-none'
         }
       >
@@ -209,7 +209,7 @@ export function RouletteItemEditor({ items, onItemsChange, variant, inputRef }: 
           {items.length > 0 ? (
             <ul className="space-y-0.5">{rows}</ul>
           ) : (
-            <p className="py-10 text-center text-[14px] leading-5 text-[#7a6f60]">
+            <p className="py-10 text-center text-[14px] leading-5 text-[#6e6e73]">
               아직 메뉴가 없어요.
               <br />
               먹고 싶은 메뉴를 추가해 보세요.

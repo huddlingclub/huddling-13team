@@ -41,6 +41,23 @@ export function formatDistance(meters: number | null): string {
   return meters < 1000 ? meters + 'm' : (meters / 1000).toFixed(1) + 'km';
 }
 
+// 직선거리에 길 돌아가는 몫(1.3배)을 더해 분당 67m(시속 4km)로 나눈 대략의 도보 시간.
+export function distanceLine(meters: number | null): string {
+  if (meters === null) return '';
+  const minutes = Math.max(1, Math.round((meters * 1.3) / 67));
+  return formatDistance(meters) + ' · 도보 약 ' + minutes + '분';
+}
+
+export function measuredFromLabel(measuredFrom: NearbyStores['measuredFrom']): string {
+  return measuredFrom === 'device' ? '내 위치' : BASE_LOCATION.name;
+}
+
+export function nearbySummary(nearby: NearbyStores): string {
+  return nearby.stores.length > 0
+    ? measuredFromLabel(nearby.measuredFrom) + '에서 가까운 순 · ' + nearby.stores.length + '곳'
+    : BASE_LOCATION.name + ' 근처';
+}
+
 // "한식 > 찌개,전골" 처럼 저장된 분류에서 마지막 단계만 "찌개, 전골"로 보여 준다.
 export function shortCategory(category: string): string {
   return (category.split(' > ').pop() ?? '').replace(/,\s*/g, ', ');
@@ -49,12 +66,4 @@ export function shortCategory(category: string): string {
 // 확인한 가게가 없을 때 네이버 지도에서 기준 지역 + 메뉴로 검색한다.
 export function naverSearchUrl(menu: string): string {
   return 'https://map.naver.com/p/search/' + encodeURIComponent(BASE_LOCATION.searchArea + ' ' + menu.trim());
-}
-
-// 배민 앱을 바로 열 수 있는 기기인지. iPadOS는 데스크톱 Safari처럼 보여서 터치 지점 수로 구분한다.
-export function isMobileDevice(): boolean {
-  return (
-    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-  );
 }

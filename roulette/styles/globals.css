@@ -1,4 +1,5 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -195,6 +196,68 @@ input {
 
 @media (prefers-reduced-motion: reduce) {
   .result-enter {
+    animation: none;
+  }
+}
+
+/* 점심메뉴 낚시: 펭귄이 출렁이고(bob), 입질이 오면 떨고(shake), 카드가 떠오른다(fade). */
+@keyframes fishBob {
+  to {
+    transform: translateY(6px);
+  }
+}
+
+@keyframes fishShake {
+  from {
+    transform: translateX(-3px);
+  }
+  to {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes fishFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fishFill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.fish-bob {
+  animation: fishBob 0.6s ease-in-out infinite alternate;
+}
+
+.fish-shake {
+  animation: fishShake 0.15s infinite alternate;
+}
+
+.fish-fade {
+  animation: fishFade 0.35s ease;
+}
+
+/* 진행 막대. 길이는 style의 animation-duration으로 정한다. */
+.fish-fill {
+  transform-origin: left;
+  animation: fishFill linear forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fish-bob,
+  .fish-shake,
+  .fish-fade {
     animation: none;
   }
 }
