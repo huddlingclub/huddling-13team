@@ -11,7 +11,7 @@
 
 - 저장소 클론 완료 (2026-11-14 11:03 KST)
 - 컨셉 논의 진행 중
-- 점심메뉴 낚시를 [clipfriends.club/huddling](https://clipfriends.club/huddling/)에 배포함 (마지막 배포 2026-11-14 15:27 KST). 하루 작업은 아래 [작업 기록](#작업-기록-2026-11-14)에 있습니다
+- 점심메뉴 낚시를 [clipfriends.club/huddling](https://clipfriends.club/huddling/)에 배포함 (마지막 배포 2026-11-14 16:28 KST). 하루 작업은 아래 [작업 기록](#작업-기록-2026-11-14)에 있습니다
 - 최종 업데이트: 2026-11-14 14:00 KST
 
 ## 일정
@@ -185,6 +185,8 @@
 | 14:33–14:53 | 가게 대표 사진, 탭 제목 "꼬륵 : 낚아낚아 퍼디", 다시 낚시 FAB, 끌어올리기 애니메이션, 데이터 메시지 박스, 홈 검색 스켈레톤 | `joon/store-photos` · [#3](https://github.com/huddlingclub/huddling-13team/pull/3) |
 | 15:01–15:04 | 캐스팅·입질 화면을 빙판 위 얼음 구멍 낚시로 | `joon/ice-fishing` · [#4](https://github.com/huddlingclub/huddling-13team/pull/4) |
 | 15:26–15:27 | 메시지 박스에 화면마다 식사 시간(TIME)과 주변 검색 결과(NEAR) | `joon/note-status` · [#5](https://github.com/huddlingclub/huddling-13team/pull/5) |
+| 16:12–16:13 | README에 오늘 작업 기록(이 섹션) | `joon/worklog` · [#6](https://github.com/huddlingclub/huddling-13team/pull/6) |
+| 16:27–16:28 | 링크 공유 미리보기(OG) 이미지와 메타 태그. 펭귄 퍼디가 얼음 구멍에서 비빔밥을 낚는 장면 | `joon/og-image` · [#7](https://github.com/huddlingclub/huddling-13team/pull/7) |
 
 ### PR
 
@@ -195,6 +197,8 @@
 | [#3](https://github.com/huddlingclub/huddling-13team/pull/3) | `joon/store-photos` | 낚시 화면: 가게 사진, 탭 제목, 다시 낚시 FAB, 끌어올리기 애니메이션, 데이터 메시지 박스 | 14:33 → 14:53 | `10fe7a7` |
 | [#4](https://github.com/huddlingclub/huddling-13team/pull/4) | `joon/ice-fishing` | 낚시 화면: 빙판 위 얼음 구멍에서 낚시하기 | 15:02 → 15:04 | `0535e98` |
 | [#5](https://github.com/huddlingclub/huddling-13team/pull/5) | `joon/note-status` | 메시지 박스: 화면마다 식사 시간과 주변 검색 결과 보여 주기 | 15:27 → 15:27 | `90ec33b` |
+| [#6](https://github.com/huddlingclub/huddling-13team/pull/6) | `joon/worklog` | README: 2026-11-14 작업 기록(커밋, 브랜치, PR, 배포) | 16:12 → 16:13 | `6c0e653` |
+| [#7](https://github.com/huddlingclub/huddling-13team/pull/7) | `joon/og-image` | 공유 미리보기(OG) 이미지: 펭귄 퍼디가 메뉴를 낚는 장면 | 16:28 → 16:28 | `eafc6a3` |
 
 PR #2는 연 뒤에도 같은 브랜치에서 작업을 이어 갔습니다. 우측 카드 목록은 결국 빠지고 점심메뉴 낚시 한 화면이 되었고, 준이 이 브랜치를 `main`에 직접 합쳐서(`408099c`) GitHub에는 PR #2가 합쳐진 것으로 표시됩니다.
 
@@ -202,15 +206,17 @@ PR #2는 연 뒤에도 같은 브랜치에서 작업을 이어 갔습니다. 우
 
 | 브랜치 | 만든 사람 | 상태 |
 |---|---|---|
-| `main` | | 배포 기준. 마지막 커밋 `90ec33b` (15:27) |
+| `main` | | 배포 기준. 마지막 배포 커밋 `eafc6a3` (16:28) |
 | `joon-infra` | 준 | PR #1로 합침 |
 | `joon/category-feed` | 준 | PR #2로 합침 |
 | `joon/store-photos` | 준 | PR #3로 합침 |
 | `joon/ice-fishing` | 준 | PR #4로 합침 |
 | `joon/note-status` | 준 | PR #5로 합침 |
+| `joon/worklog` | 준 | PR #6으로 합침 |
+| `joon/og-image` | 준 | PR #7로 합침 |
 | [`이수진/에셋-아이콘`](https://github.com/huddlingclub/huddling-13team/tree/%EC%9D%B4%EC%88%98%EC%A7%84/%EC%97%90%EC%85%8B-%EC%95%84%EC%9D%B4%EC%BD%98) | 이수진 | **아직 합치지 않음, PR 없음.** `roulette/public/menu/`에 카테고리 아이콘 10종(96×96 픽셀아트 SVG)이 있음. 지금 앱은 `roulette/assets/fishing/menu/`의 다른 아이콘을 씀 |
 
-합친 브랜치 다섯 개는 원격에 그대로 남아 있습니다.
+합친 브랜치 일곱 개는 원격에 그대로 남아 있습니다.
 
 ### 커밋
 
@@ -247,6 +253,10 @@ PR #2는 연 뒤에도 같은 브랜치에서 작업을 이어 갔습니다. 우
 | 15:04 | `0535e98` | `main` | PR #4 합침 |
 | 15:26 | `4156589` | `joon/note-status` | 메시지 박스에 화면마다 식사 시간과 주변 검색 결과 붙이기 |
 | 15:27 | `90ec33b` | `main` | PR #5 합침 |
+| 16:12 | `d391f61` | `joon/worklog` | README에 2026-11-14 작업 기록(커밋·브랜치·PR·배포) 추가 |
+| 16:13 | `6c0e653` | `main` | PR #6 합침 |
+| 16:27 | `b28d690` | `joon/og-image` | 펭귄 퍼디가 메뉴를 낚는 공유 미리보기(OG) 이미지 |
+| 16:28 | `eafc6a3` | `main` | PR #7 합침 |
 
 이 밖에 Cursor Agent가 Slack 대화를 이 README에 반영한 커밋 7개가 `main`에 있습니다: `b2157ec`(11:34), `af21d14`(11:57), `776d9e0`(12:27), `ab8aa2b`(12:58), `edaf51e`(13:12), `395fa89`(13:29), `a9556bf`(13:59).
 
@@ -262,6 +272,9 @@ PR #2는 연 뒤에도 같은 브랜치에서 작업을 이어 갔습니다. 우
 | 14:53 | PR #3 합침 `10fe7a7` | 성공 |
 | 15:04 | PR #4 합침 `0535e98` | 성공 |
 | 15:27 | PR #5 합침 `90ec33b` | 성공 |
+| 16:28 | PR #7 합침 `eafc6a3` | 성공 |
+
+PR #6은 루트 README만 바꿔서 배포가 돌지 않았습니다.
 
 ### 데이터와 키
 
