@@ -29,9 +29,9 @@ const faviconUrl = import.meta.env.BASE_URL + 'favicon-48.png';
 
 // 좌측 앱: 점심메뉴 낚시. 펭귄 퍼디가 얼음 구멍에서 메뉴를 낚아 올린다.
 // 화면 흐름과 값은 팀 프로토타입(menu-fishing.html)의 S1~S9, E1을 따른다.
-type Screen = 'home' | 'collect' | 'setup' | 'cast' | 'bite' | 'result' | 'stores' | 'dex' | 'empty';
+export type Screen = 'home' | 'collect' | 'setup' | 'cast' | 'bite' | 'result' | 'stores' | 'dex' | 'empty';
 
-const SCREEN_LABEL: Record<Screen, string> = {
+export const SCREEN_LABEL: Record<Screen, string> = {
   home: '빙산 낚시터',
   collect: '주변 메뉴 모으는 중',
   setup: '낚시 준비',
@@ -70,10 +70,15 @@ interface MenuFishingProps {
   // 기기 위치는 낚싯대를 잡을 때 한 번 묻는다.
   onRequestLocation: () => void;
   onEditMenus: () => void;
+  // 화면이 바뀔 때마다 알린다. 데스크톱 왼쪽 데이터 메시지 박스가 쓴다.
+  onScreenChange?: (screen: Screen) => void;
 }
 
-export function MenuFishing({ items, location, onRequestLocation, onEditMenus }: MenuFishingProps) {
+export function MenuFishing({ items, location, onRequestLocation, onEditMenus, onScreenChange }: MenuFishingProps) {
   const [screen, setScreen] = useState<Screen>('home');
+  useEffect(() => {
+    onScreenChange?.(screen);
+  }, [screen, onScreenChange]);
   const [greeting, setGreeting] = useState(() => timeGreeting(new Date()));
   const [radius, setRadius] = useState(DEFAULT_RADIUS);
   const [budget, setBudget] = useState(BUDGETS[1]);
