@@ -5,7 +5,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseCsv } from './csv.mjs';
+import { DUMMY_BAEMIN_URL, parseCsv } from './csv.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CSV_PATH = join(ROOT, 'data/candidates.csv');
@@ -16,10 +16,12 @@ const looksLikeNaver = (url) => /^https:\/\/(map\.naver\.com|naver\.me|m\.place\
 
 const rows = parseCsv(readFileSync(CSV_PATH, 'utf8'));
 const warnings = [];
+const dummyNames = [];
 const stores = rows
   .filter((r) => r.naver_url || r.baemin_url)
   .map((r) => {
-    if (r.baemin_url && !looksLikeBaemin(r.baemin_url)) warnings.push(r.name + ': 배민 링크 형식이 낯설어요 (' + r.baemin_url + ')');
+    if (r.baemin_url === DUMMY_BAEMIN_URL) dummyNames.push(r.menu + ' ' + r.name);
+    else if (r.baemin_url && !looksLikeBaemin(r.baemin_url)) warnings.push(r.name + ': 배민 링크 형식이 낯설어요 (' + r.baemin_url + ')');
     if (r.naver_url && !looksLikeNaver(r.naver_url)) warnings.push(r.name + ': 네이버 링크 형식이 낯설어요 (' + r.naver_url + ')');
     if (!r.lat || !r.lng) warnings.push(r.name + ': 좌표가 없어서 사용자 위치 기준 정렬에서 맨 뒤로 가요');
     return {
@@ -43,4 +45,7 @@ const counts = {};
 for (const s of stores) counts[s.menu] = (counts[s.menu] ?? 0) + 1;
 const summary = Object.entries(counts).map(([menu, n]) => menu + ' ' + n).join(', ');
 console.log('저장: data/stores.json (' + stores.length + '곳' + (summary ? ': ' + summary : '') + ')');
+if (dummyNames.length > 0) {
+  console.log('  배민 더미 링크 ' + dummyNames.length + '곳: baemin_url을 배민 앱의 공유 링크(https://s.baemin.com/...)로 바꿔 주세요.');
+}
 for (const w of warnings) console.warn('  확인 필요 · ' + w);
