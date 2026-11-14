@@ -45,6 +45,12 @@
 
 팀 채팅방에는 준이 메인 에이전트를 붙일 예정입니다.
 
+## 프로젝트 구조
+
+| 폴더 | 내용 |
+|---|---|
+| [roulette/](roulette/) | 돌림판 앱 (Vite + React). 점심 메뉴 룰렛의 바탕 |
+
 ## 참고 링크
 
 - [DesignBookmark](https://designbookmark.com/): 바이브 디자인할 때 쓸 디자인 도구와 리소스 2,000여 개 모음
