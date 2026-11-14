@@ -105,7 +105,9 @@ async function main() {
       const key = menu + '|' + place.id;
       const prev = rowsByKey.get(key);
       const row = toRow(menu, place);
-      rowsByKey.set(key, prev ? { ...row, naver_url: prev.naver_url, baemin_url: prev.baemin_url, note: prev.note } : row);
+      // 사람이 채운 링크와 메모, 네이버 확인 결과는 다시 검색해도 남긴다.
+      const kept = ['naver_url', 'baemin_url', 'note', 'menu_check', 'naver_name', 'naver_category'];
+      rowsByKey.set(key, prev ? { ...row, ...Object.fromEntries(kept.map((k) => [k, prev[k] ?? ''])) } : row);
     }
     console.log('  ' + menu + ': ' + places.length + '곳');
   }
