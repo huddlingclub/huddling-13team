@@ -11,7 +11,7 @@
 
 - 저장소 클론 완료 (2026-11-14 11:03 KST)
 - 컨셉 논의 진행 중
-- 점심메뉴 낚시를 [clipfriends.club/huddling](https://clipfriends.club/huddling/)에 배포함 (마지막 배포 2026-11-14 16:28 KST). 하루 작업은 아래 [작업 기록](#작업-기록-2026-11-14)에 있습니다
+- 점심메뉴 낚시를 [clipfriends.club/huddling](https://clipfriends.club/huddling/)에 배포함 (마지막 배포 2026-11-14 19:59 KST). 하루 작업은 아래 [작업 기록](#작업-기록-2026-11-14)에 있습니다
 - 서비스([clipfriends.club/huddling](https://clipfriends.club/huddling/))는 2026-11-14 24:00 KST까지만 웹에 공개 (준, 18:13 KST)
 - 해커톤에서 팀이 상을 받음 (18:20 KST Slack 언급)
 - 16:03~18:20 KST 사이 팀원들의 마무리 인사가 오감
@@ -190,6 +190,10 @@
 | 15:26–15:27 | 메시지 박스에 화면마다 식사 시간(TIME)과 주변 검색 결과(NEAR) | `joon/note-status` · [#5](https://github.com/huddlingclub/huddling-13team/pull/5) |
 | 16:12–16:13 | README에 오늘 작업 기록(이 섹션) | `joon/worklog` · [#6](https://github.com/huddlingclub/huddling-13team/pull/6) |
 | 16:27–16:28 | 링크 공유 미리보기(OG) 이미지와 메타 태그. 펭귄 퍼디가 얼음 구멍에서 비빔밥을 낚는 장면 | `joon/og-image` · [#7](https://github.com/huddlingclub/huddling-13team/pull/7) |
+| 16:31–16:32 | 작업 기록에 PR #6, #7 추가 | `joon/worklog-update` · [#8](https://github.com/huddlingclub/huddling-13team/pull/8) |
+| 19:23 | 쇼케이스라 위치를 서울스퀘어로 고정하고 위치 권한을 묻지 않음 | `joon/fixed-location` · [#9](https://github.com/huddlingclub/huddling-13team/pull/9) |
+| 19:37–19:39 | 보안 점검 후 보안 헤더(CSP 등)를 넣고, Cloudflare 방문 통계 스크립트는 허용 | `joon/security-headers` · [#10](https://github.com/huddlingclub/huddling-13team/pull/10), `joon/csp-analytics` · [#11](https://github.com/huddlingclub/huddling-13team/pull/11) |
+| 19:40–20:00 | Cloudflare 설정(코드 밖): http→https 자동 전환(Always Use HTTPS)을 켜고, 배포 토큰 권한을 13개에서 5개로 줄이고 만료일을 걸고, 수동 배포로 확인 | 대시보드 |
 
 ### PR
 
@@ -202,6 +206,10 @@
 | [#5](https://github.com/huddlingclub/huddling-13team/pull/5) | `joon/note-status` | 메시지 박스: 화면마다 식사 시간과 주변 검색 결과 보여 주기 | 15:27 → 15:27 | `90ec33b` |
 | [#6](https://github.com/huddlingclub/huddling-13team/pull/6) | `joon/worklog` | README: 2026-11-14 작업 기록(커밋, 브랜치, PR, 배포) | 16:12 → 16:13 | `6c0e653` |
 | [#7](https://github.com/huddlingclub/huddling-13team/pull/7) | `joon/og-image` | 공유 미리보기(OG) 이미지: 펭귄 퍼디가 메뉴를 낚는 장면 | 16:28 → 16:28 | `eafc6a3` |
+| [#8](https://github.com/huddlingclub/huddling-13team/pull/8) | `joon/worklog-update` | README 작업 기록: PR #6, #7 추가 | 16:32 → 16:32 | `4d8354e` |
+| [#9](https://github.com/huddlingclub/huddling-13team/pull/9) | `joon/fixed-location` | 위치를 서울스퀘어로 고정 (위치 권한 묻지 않기) | 19:23 → 19:23 | `86bd968` |
+| [#10](https://github.com/huddlingclub/huddling-13team/pull/10) | `joon/security-headers` | 보안 헤더 추가: CSP, nosniff, Referrer-Policy, Permissions-Policy | 19:37 → 19:37 | `1f35048` |
+| [#11](https://github.com/huddlingclub/huddling-13team/pull/11) | `joon/csp-analytics` | CSP: Cloudflare 방문 통계(Web Analytics) 허용 | 19:39 → 19:39 | `693ebb7` |
 
 PR #2는 연 뒤에도 같은 브랜치에서 작업을 이어 갔습니다. 우측 카드 목록은 결국 빠지고 점심메뉴 낚시 한 화면이 되었고, 준이 이 브랜치를 `main`에 직접 합쳐서(`408099c`) GitHub에는 PR #2가 합쳐진 것으로 표시됩니다.
 
@@ -209,7 +217,7 @@ PR #2는 연 뒤에도 같은 브랜치에서 작업을 이어 갔습니다. 우
 
 | 브랜치 | 만든 사람 | 상태 |
 |---|---|---|
-| `main` | | 배포 기준. 마지막 배포 커밋 `eafc6a3` (16:28) |
+| `main` | | 배포 기준. 마지막 배포 커밋 `693ebb7` (19:59 수동 배포) |
 | `joon-infra` | 준 | PR #1로 합침 |
 | `joon/category-feed` | 준 | PR #2로 합침 |
 | `joon/store-photos` | 준 | PR #3로 합침 |
@@ -217,9 +225,13 @@ PR #2는 연 뒤에도 같은 브랜치에서 작업을 이어 갔습니다. 우
 | `joon/note-status` | 준 | PR #5로 합침 |
 | `joon/worklog` | 준 | PR #6으로 합침 |
 | `joon/og-image` | 준 | PR #7로 합침 |
+| `joon/worklog-update` | 준 | PR #8로 합침 |
+| `joon/fixed-location` | 준 | PR #9로 합침 |
+| `joon/security-headers` | 준 | PR #10으로 합침 |
+| `joon/csp-analytics` | 준 | PR #11로 합침 |
 | [`이수진/에셋-아이콘`](https://github.com/huddlingclub/huddling-13team/tree/%EC%9D%B4%EC%88%98%EC%A7%84/%EC%97%90%EC%85%8B-%EC%95%84%EC%9D%B4%EC%BD%98) | 이수진 | **아직 합치지 않음, PR 없음.** `roulette/public/menu/`에 카테고리 아이콘 10종(96×96 픽셀아트 SVG)이 있음. 지금 앱은 `roulette/assets/fishing/menu/`의 다른 아이콘을 씀 |
 
-합친 브랜치 일곱 개는 원격에 그대로 남아 있습니다.
+합친 브랜치 열한 개는 원격에 그대로 남아 있습니다.
 
 ### 커밋
 
@@ -260,8 +272,16 @@ PR #2는 연 뒤에도 같은 브랜치에서 작업을 이어 갔습니다. 우
 | 16:13 | `6c0e653` | `main` | PR #6 합침 |
 | 16:27 | `b28d690` | `joon/og-image` | 펭귄 퍼디가 메뉴를 낚는 공유 미리보기(OG) 이미지 |
 | 16:28 | `eafc6a3` | `main` | PR #7 합침 |
+| 16:31 | `aba4a39` | `joon/worklog-update` | README 작업 기록에 PR #6(작업 기록)과 #7(OG 이미지) 추가 |
+| 16:32 | `4d8354e` | `main` | PR #8 합침 |
+| 19:23 | `4361317` | `joon/fixed-location` | 위치를 서울스퀘어로 고정하고 위치 권한을 묻지 않기 |
+| 19:23 | `86bd968` | `main` | PR #9 합침 |
+| 19:37 | `3fcb68a` | `joon/security-headers` | 보안 헤더(CSP 등) 추가 |
+| 19:37 | `1f35048` | `main` | PR #10 합침 |
+| 19:39 | `449094d` | `joon/csp-analytics` | CSP에서 Cloudflare 방문 통계(Web Analytics) 허용 |
+| 19:39 | `693ebb7` | `main` | PR #11 합침 |
 
-이 밖에 Cursor Agent가 Slack 대화를 이 README에 반영한 커밋 7개가 `main`에 있습니다: `b2157ec`(11:34), `af21d14`(11:57), `776d9e0`(12:27), `ab8aa2b`(12:58), `edaf51e`(13:12), `395fa89`(13:29), `a9556bf`(13:59).
+이 밖에 Cursor Agent가 Slack 대화를 이 README에 반영한 커밋 8개가 `main`에 있습니다: `b2157ec`(11:34), `af21d14`(11:57), `776d9e0`(12:27), `ab8aa2b`(12:58), `edaf51e`(13:12), `395fa89`(13:29), `a9556bf`(13:59), `56d9118`(18:24).
 
 ### 배포
 
@@ -276,15 +296,19 @@ PR #2는 연 뒤에도 같은 브랜치에서 작업을 이어 갔습니다. 우
 | 15:04 | PR #4 합침 `0535e98` | 성공 |
 | 15:27 | PR #5 합침 `90ec33b` | 성공 |
 | 16:28 | PR #7 합침 `eafc6a3` | 성공 |
+| 19:23 | PR #9 합침 `86bd968` | 성공 |
+| 19:37 | PR #10 합침 `1f35048` | 성공 |
+| 19:39 | PR #11 합침 `693ebb7` | 성공 |
+| 19:59 | 권한을 줄인 토큰 확인용 수동 실행 `693ebb7` | 성공 |
 
-PR #6은 루트 README만 바꿔서 배포가 돌지 않았습니다.
+PR #6, #8은 루트 README만 바꿔서 배포가 돌지 않았습니다.
 
 ### 데이터와 키
 
 - **가게 데이터**: 서울스퀘어(서울 중구 한강대로 416) 반경 1km 음식점 1,421곳을 카카오 로컬 API로 모으고, 네이버 지도에서 같은 가게를 확인한 388줄을 `roulette/data/stores.json`에 넣었습니다. 한 가게가 여러 메뉴에 들어간 경우가 있어 실제 가게는 303곳이고, 384줄에 네이버 대표 사진이 있습니다.
 - **카테고리**: 한식, 중식, 일식, 양식, 분식, 아시안, 고기, 해산물, 패스트푸드, 샐러드 10개(`roulette/data/categories.json`).
 - **주문하기**: 누르면 https://www.huddling.club/ 로 가는 QR 하나를 띄웁니다. 가게 데이터의 배민 링크는 아직 더미(`https://baemin.com/`)입니다.
-- **키**: 카카오 REST API 키는 `roulette/.env.local`에만 있고 git에는 올리지 않았습니다. 배포용 Cloudflare 토큰은 저장소 시크릿 `CLOUDFLARE_API_TOKEN`입니다.
+- **키**: 카카오 REST API 키는 가게 데이터를 모을 때만 썼고, 위치를 서울스퀘어로 고정한 뒤 로컬 `roulette/.env.local`에서 지웠습니다. git에 올라간 적은 없습니다. 배포용 Cloudflare 토큰은 저장소 시크릿 `CLOUDFLARE_API_TOKEN`이고, 배포에 필요한 권한 5개만 남기고 만료일을 걸었습니다(자세한 내용은 [roulette/README.md](roulette/README.md)의 배포 절).
 
 ## 참고 링크 · 디자인
 
