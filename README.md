@@ -11,7 +11,7 @@
 
 - 저장소 클론 완료 (2026-11-14 11:03 KST)
 - 컨셉 논의 진행 중
-- 최종 업데이트: 2026-11-14 13:15 KST
+- 최종 업데이트: 2026-11-14 13:30 KST
 
 ## 일정
 
@@ -175,3 +175,5 @@
 - 김연정이 Slack에 픽셀 이미지 스타일 레퍼런스 이미지를 공유함 (12:51 KST). 이미지는 Slack에만 있음
 - 김연정이 Slack에 음식 아이콘 참고 이미지를 공유함 (13:05 KST, "음식아이콘 참고해주세요!"). 이미지는 Slack에만 있음
 - [clipfriends.club/huddling](https://clipfriends.club/huddling/): 준이 공유한 링크 (13:07 KST)
+- [김연정 Figma (eXCFrame 고도화)](https://www.figma.com/design/H8ixrCTB4yIGAxUEqVv7WQ/eXCFrame-%EA%B3%A0%EB%8F%84%ED%99%94?node-id=307-2346&t=QMGNielYkpJSgEmJ-1): 김연정 공유 (13:19 KST)
+- jhj3697510이 Slack에 움직이는 배경 이미지를 공유함 (13:25 KST, "이건 움직이는 배경입니다"). 이미지는 Slack에만 있음
