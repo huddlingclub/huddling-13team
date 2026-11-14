@@ -21,6 +21,7 @@ npm run dev
 - [wrangler.jsonc](wrangler.jsonc): 정적 파일만 있는 Worker입니다. `clipfriends.club/huddling`과 `clipfriends.club/huddling/*` 두 경로만 맡고, `assets.base_path`로 `dist/`를 `/huddling` 아래에 올립니다. `clipfriends.club`의 나머지 경로는 다른 저장소의 Worker가 맡으며, 같은 호스트에서는 Route가 Custom Domain보다 먼저 실행되어 서로 간섭하지 않습니다.
 - GitHub Actions 배포에는 저장소 시크릿 `CLOUDFLARE_API_TOKEN`이 필요합니다. Cloudflare 대시보드 → My Profile → API Tokens에서 "Edit Cloudflare Workers" 템플릿으로 만들고(Zone은 `clipfriends.club`), `gh secret set CLOUDFLARE_API_TOKEN --repo huddlingclub/huddling-13team`으로 등록합니다.
 - 손으로 배포하려면 `npx wrangler login` 후 `npm run deploy`를 실행합니다. 평소에는 `main`에 합치는 것으로 배포합니다.
+- 응답 보안 헤더는 [public/_headers](public/_headers)에 있습니다. 같은 도메인에 로그인이 필요한 다른 앱이 있어서, CSP로 외부 스크립트를 막고 글꼴(cdn.jsdelivr.net, Google Fonts)과 가게 사진(search.pstatic.net)만 허용합니다. 외부 스크립트, 이미지, 글꼴을 새로 쓰면 이 파일의 CSP에 주소를 더해야 화면에 나옵니다.
 
 ## 공유 미리보기
 
