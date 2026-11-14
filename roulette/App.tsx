@@ -1,24 +1,28 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { RouletteWheel } from './components/RouletteWheel';
 import { RouletteManager } from './components/RouletteManager';
 import { RouletteSidePanel } from './components/RouletteSidePanel';
+import { RouletteResultPanel, nearbySummary } from './components/RouletteResultPanel';
+import { StoreList } from './components/StoreList';
 import { SimpleModal } from './components/SimpleModal';
 import { useIsDesktop } from './hooks/useIsDesktop';
+import { useUserLocation } from './hooks/useUserLocation';
+import { findNearbyStores } from './lib/stores';
+import { COLORS } from './components/RouletteItemEditor';
+import categories from './data/categories.json';
 import svgPaths from './assets/svgPaths';
 import type { RouletteItem } from './types';
 
 const ITEMS_KEY = 'rouletteItems';
 const VERSION_KEY = 'rouletteVersion';
-const CURRENT_VERSION = '8.0'; // 로컬 스토리지 초기화 버전. 기본 항목을 바꾸면 올린다.
+const CURRENT_VERSION = '9.0'; // 로컬 스토리지 초기화 버전. 기본 항목을 바꾸면 올린다.
 
-// 기본 점심 메뉴. 색상은 RouletteManager의 COLORS 앞쪽 5개와 같다.
-const DEFAULT_ITEMS: RouletteItem[] = [
-  { id: '1', text: '김치찌개', color: '#FF6B6B' },
-  { id: '2', text: '돈까스', color: '#4ECDC4' },
-  { id: '3', text: '국밥', color: '#45B7D1' },
-  { id: '4', text: '쌀국수', color: '#96CEB4' },
-  { id: '5', text: '샐러드', color: '#FECA57' }
-];
+// 기본 항목은 근처 가게를 나눈 카테고리 10개(data/categories.json). 색은 COLORS 순서대로 하나씩.
+const DEFAULT_ITEMS: RouletteItem[] = categories.map((c, i) => ({
+  id: String(i + 1),
+  text: c.name,
+  color: COLORS[i % COLORS.length],
+}));
 
 // 첫 렌더링 전에 로컬 스토리지에서 항목을 읽는다.
 // effect에서 읽으면 StrictMode의 이중 실행 때 빈 배열이 먼저 저장되어 항목이 초기화된다.
@@ -97,10 +101,15 @@ export default function App() {
   const [isSpinning, setIsSpinning] = useState(false);
   const [winner, setWinner] = useState<RouletteItem | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [resultKey, setResultKey] = useState(0);
   const [showAddItem, setShowAddItem] = useState(false);
   const [screenHeight, setScreenHeight] = useState(window.innerHeight);
   const isDesktop = useIsDesktop();
   const panelInputRef = useRef<HTMLInputElement>(null);
+  const { location, requestLocation } = useUserLocation();
+
+  // 뽑힌 메뉴를 파는 근처 가게. 기기 위치를 받으면 그 위치에서 가까운 순으로 다시 정렬된다.
+  const nearby = useMemo(() => (winner ? findNearbyStores(winner.text, location) : null), [winner, location]);
 
   // 화면 높이 감지
   useEffect(() => {
@@ -125,18 +134,21 @@ export default function App() {
 
   const handleSpin = useCallback(() => {
     if (items.length === 0 || isSpinning) return;
+    requestLocation();
     setIsSpinning(true);
     setWinner(null);
-  }, [items.length, isSpinning]);
+  }, [items.length, isSpinning, requestLocation]);
 
   const handleSpinComplete = useCallback((winnerItem: RouletteItem) => {
     // 스핀 완료 처리를 약간 지연시켜 애니메이션 완료 보장
     setTimeout(() => {
       setIsSpinning(false);
       setWinner(winnerItem);
-      setShowResult(true);
+      setResultKey((k) => k + 1);
+      // 데스크톱은 우측 카드에 결과와 가게가 바로 나오므로 모달을 띄우지 않는다.
+      setShowResult(!isDesktop);
     }, 100);
-  }, []);
+  }, [isDesktop]);
 
   // 데스크톱에서는 우측 패널 입력창으로, 모바일에서는 바텀시트로 항목을 추가한다.
   const handleAddItemClick = () => {
@@ -292,33 +304,40 @@ export default function App() {
         />
       )}
 
-      {/* Result Modal */}
-      <SimpleModal isOpen={showResult} onClose={() => setShowResult(false)} className="w-[90vw] max-w-[400px]">
-        <div className="p-6 text-center">
-          <div 
-            className="w-16 h-16 rounded-full mx-auto mb-4 border-2 border-white shadow-lg" 
-            style={{ backgroundColor: winner?.color || '#E5E5E5' }}
-          />
-          <p className="text-2xl font-bold mb-2 text-gray-900">{winner?.text || '항목 없음'}</p>
-          <p className="text-muted-foreground mb-6">축하합니다!</p>
-          <button 
-            onClick={() => setShowResult(false)} 
-            className="w-full h-12 bg-[#fe9800] text-white font-semibold rounded-lg transition-none"
-          >
-            확인
-          </button>
+      {/* Result Modal (모바일): 뽑힌 메뉴와 근처 가게 */}
+      <SimpleModal isOpen={showResult && !isDesktop} onClose={() => setShowResult(false)} className="w-[90vw] max-w-[400px]">
+        <div className="flex max-h-[85vh] flex-col">
+          <div className="shrink-0 px-6 pt-6 pb-3 text-center">
+            <div 
+              className="w-16 h-16 rounded-full mx-auto mb-4 border-2 border-white shadow-lg" 
+              style={{ backgroundColor: winner?.color || '#E5E5E5' }}
+            />
+            <p className="text-2xl font-bold mb-1 text-gray-900">{winner?.text || '항목 없음'}</p>
+            {nearby && <p className="text-[14px] leading-5 text-[#7a6f60] tabular-nums">{nearbySummary(nearby)}</p>}
+          </div>
+          {winner && nearby && (
+            <div className="panel-scroll min-h-0 overflow-y-auto px-6">
+              <StoreList menu={winner.text} stores={nearby.stores} />
+            </div>
+          )}
+          <div className="shrink-0 px-6 pt-4 pb-6">
+            <button 
+              onClick={() => setShowResult(false)} 
+              className="w-full h-12 bg-[#fe9800] text-white font-semibold rounded-lg transition-none"
+            >
+              확인
+            </button>
+          </div>
         </div>
       </SimpleModal>
     </div>
 
     {isDesktop && (
-      <RouletteSidePanel
-        items={items}
-        onItemsChange={setItems}
-        winner={winner}
-        isSpinning={isSpinning}
-        inputRef={panelInputRef}
-      />
+      // 우측 열: 위는 뽑힌 메뉴와 근처 가게, 아래는 메뉴 목록
+      <div className="w-[340px] shrink-0 self-start mt-3 max-h-[calc(100vh-24px)] flex flex-col gap-3">
+        <RouletteResultPanel winner={winner} isSpinning={isSpinning} nearby={nearby} resultKey={resultKey} />
+        <RouletteSidePanel items={items} onItemsChange={setItems} inputRef={panelInputRef} />
+      </div>
     )}
     </div>
   );
