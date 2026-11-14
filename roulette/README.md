@@ -19,7 +19,9 @@ npm run dev
 라이브 주소는 https://clipfriends.club/huddling 입니다. `main`에 `roulette/` 변경이 합쳐지면 GitHub Actions([deploy-roulette.yml](../.github/workflows/deploy-roulette.yml))가 빌드해서 Cloudflare Worker `huddling-roulette`로 배포합니다. `main`에 있는 룰렛이 곧 라이브입니다.
 
 - [wrangler.jsonc](wrangler.jsonc): 정적 파일만 있는 Worker입니다. `clipfriends.club/huddling`과 `clipfriends.club/huddling/*` 두 경로만 맡고, `assets.base_path`로 `dist/`를 `/huddling` 아래에 올립니다. `clipfriends.club`의 나머지 경로는 다른 저장소의 Worker가 맡으며, 같은 호스트에서는 Route가 Custom Domain보다 먼저 실행되어 서로 간섭하지 않습니다.
-- GitHub Actions 배포에는 저장소 시크릿 `CLOUDFLARE_API_TOKEN`이 필요합니다. Cloudflare 대시보드 → My Profile → API Tokens에서 "Edit Cloudflare Workers" 템플릿으로 만들고(Zone은 `clipfriends.club`), `gh secret set CLOUDFLARE_API_TOKEN --repo huddlingclub/huddling-13team`으로 등록합니다.
+- GitHub Actions 배포에는 저장소 시크릿 `CLOUDFLARE_API_TOKEN`이 필요합니다. 지금 토큰(`huddling-club-1114`)에는 배포에 필요한 권한만 남겼습니다. 계정에서는 Workers Scripts 편집과 Account Settings 읽기, `clipfriends.club` zone에서는 Workers Routes 편집, 사용자 정보에서는 Memberships와 User Details 읽기입니다. 토큰을 새로 만들 때도 이 권한만 주고 `gh secret set CLOUDFLARE_API_TOKEN --repo huddlingclub/huddling-13team`으로 등록합니다.
+- 토큰에는 만료일(지금은 2026-11-30 23:59 KST)이 걸려 있습니다. 만료되면 자동 배포가 실패하고, 라이브는 마지막으로 배포한 상태 그대로 남습니다. 더 배포하려면 Cloudflare 대시보드 → My Profile → API Tokens에서 이 토큰을 Edit해 만료일을 늘립니다. 토큰 값이 그대로라 시크릿은 다시 넣지 않아도 됩니다.
+- `clipfriends.club`은 Cloudflare의 Always Use HTTPS가 켜져 있어서 http 주소로 들어오면 https로 넘어갑니다.
 - 손으로 배포하려면 `npx wrangler login` 후 `npm run deploy`를 실행합니다. 평소에는 `main`에 합치는 것으로 배포합니다.
 - 응답 보안 헤더는 [public/_headers](public/_headers)에 있습니다. 같은 도메인에 로그인이 필요한 다른 앱이 있어서, CSP로 외부 스크립트를 막고 글꼴(cdn.jsdelivr.net, Google Fonts), 가게 사진(search.pstatic.net), Cloudflare 방문 통계(Web Analytics)만 허용합니다. 외부 스크립트, 이미지, 글꼴을 새로 쓰면 이 파일의 CSP에 주소를 더해야 화면에 나옵니다.
 
