@@ -399,6 +399,21 @@ input {
   animation: fishAlert 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* 홈 "오늘 바다에 사는 메뉴"를 찾는 동안의 빈 칸: 베이지 위로 밝은 띠가 지나간다 */
+@keyframes fishShimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+.fish-skeleton {
+  background: linear-gradient(100deg, #f4ede1 30%, #fbf8f2 50%, #f4ede1 70%) 100% 0 / 200% 100%;
+  animation: fishShimmer 1.2s linear infinite;
+}
+
 /* 진행 막대. 길이는 style의 animation-duration으로 정한다. */
 .fish-fill {
   transform-origin: left;
@@ -416,7 +431,8 @@ input {
   .fish-flash,
   .fish-pop,
   .fish-wiggle,
-  .fish-alert {
+  .fish-alert,
+  .fish-skeleton {
     animation: none;
   }
 }

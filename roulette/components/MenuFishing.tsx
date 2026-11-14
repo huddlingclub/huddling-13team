@@ -49,6 +49,8 @@ const BITE_AT_MS = 900;
 const PULL_BAR_MS = 2200;
 // "탭해서 당기기!"를 누른 뒤 결과까지: 펭귄이 젖히고, 물보라가 튀고, 메뉴가 솟아오른 뒤 반짝인다.
 const PULL_MS = 1250;
+// 처음 홈에 들어오면 "오늘 바다에 사는 메뉴" 자리에 스켈레톤과 "근처를 검색중…"을 이만큼 보여 준다.
+const HOME_SEARCH_MS = 1400;
 
 const BUDGETS = ['1만원 이하', '1~2만원', '상관없음'];
 const SORTS = ['거리순', '배달팁', '평점', '최소주문'];
@@ -87,6 +89,11 @@ export function MenuFishing({ items, location, onRequestLocation, onEditMenus, o
   const [pick, setPick] = useState<RouletteItem | null>(null);
   const [bitten, setBitten] = useState(false);
   const [pulling, setPulling] = useState(false);
+  const [searching, setSearching] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setSearching(false), HOME_SEARCH_MS);
+    return () => clearTimeout(t);
+  }, []);
   const [dex, setDex] = useState(loadDex);
   const [streak, setStreak] = useState(loadStreak);
   const openQr = useOpenOrderQr();
@@ -193,6 +200,7 @@ export function MenuFishing({ items, location, onRequestLocation, onEditMenus, o
           sea={sea}
           excluded={excluded}
           poolSize={pool.length}
+          searching={searching}
           onStart={startFishing}
           onDex={() => go('dex')}
           onEditMenus={onEditMenus}
@@ -405,6 +413,7 @@ function HomeScreen({
   sea,
   excluded,
   poolSize,
+  searching,
   onStart,
   onDex,
   onEditMenus,
@@ -413,6 +422,7 @@ function HomeScreen({
   sea: SeaMenu[];
   excluded: string[];
   poolSize: number;
+  searching: boolean;
   onStart: () => void;
   onDex: () => void;
   onEditMenus: () => void;
@@ -442,31 +452,46 @@ function HomeScreen({
         <div className="mx-auto mb-3.5 h-1 w-10 rounded-sm bg-fish-line" />
         <div className="flex items-baseline justify-between">
           <h2 className="text-[14px] font-bold">오늘 바다에 사는 메뉴</h2>
-          <span className="text-[12px] text-fish-sub tabular-nums">
-            {poolSize}종 ·{' '}
-            <button
-              type="button"
-              onClick={onEditMenus}
-              className={'rounded font-semibold text-fish-navy underline underline-offset-2 hover:text-fish-ink ' + FOCUS}
-            >
-              편집
-            </button>
+          <span className="text-[12px] text-fish-sub tabular-nums" aria-live="polite">
+            {searching ? (
+              '근처를 검색중…'
+            ) : (
+              <>
+                {poolSize}종 ·{' '}
+                <button
+                  type="button"
+                  onClick={onEditMenus}
+                  className={'rounded font-semibold text-fish-navy underline underline-offset-2 hover:text-fish-ink ' + FOCUS}
+                >
+                  편집
+                </button>
+              </>
+            )}
           </span>
         </div>
-        <ul className="mb-4 mt-2.5 grid grid-cols-5 gap-2.5">
-          {sea.map((m) => {
-            const out = excluded.includes(m.item.id) || !catchable(m);
-            return (
-              <li
-                key={m.item.id}
-                title={m.item.text}
-                className={'grid h-[58px] place-items-center rounded-xl bg-fish-beige ' + (out ? 'opacity-30' : '')}
-              >
-                <MenuIcon menu={m.item.text} className="size-12" label={m.item.text + (out ? ' (오늘은 없음)' : '')} />
-              </li>
-            );
-          })}
-        </ul>
+        {searching ? (
+          // 메뉴 칸과 같은 수·크기의 빈 칸이 반짝이며, 다 찾으면 같은 자리에 메뉴가 나온다.
+          <ul aria-hidden="true" className="mb-4 mt-2.5 grid grid-cols-5 gap-2.5">
+            {sea.map((m) => (
+              <li key={m.item.id} className="fish-skeleton h-[58px] rounded-xl" />
+            ))}
+          </ul>
+        ) : (
+          <ul className="fish-fade mb-4 mt-2.5 grid grid-cols-5 gap-2.5">
+            {sea.map((m) => {
+              const out = excluded.includes(m.item.id) || !catchable(m);
+              return (
+                <li
+                  key={m.item.id}
+                  title={m.item.text}
+                  className={'grid h-[58px] place-items-center rounded-xl bg-fish-beige ' + (out ? 'opacity-30' : '')}
+                >
+                  <MenuIcon menu={m.item.text} className="size-12" label={m.item.text + (out ? ' (오늘은 없음)' : '')} />
+                </li>
+              );
+            })}
+          </ul>
+        )}
         <div className="mt-1.5 flex gap-2.5">
           <button type="button" onClick={onStart} className={BTN_PRIMARY + ' flex-1'}>
             낚싯대 잡기
