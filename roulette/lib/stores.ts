@@ -18,9 +18,20 @@ export interface NearbyStores {
   measuredFrom: 'device' | 'base';
 }
 
+// 같은 가게가 여러 메뉴에 들어 있어서(388줄 중 77곳) 가게 수는 이름과 주소가 같으면 한 곳으로 센다.
+export function countStores(stores: Store[]): number {
+  return new Set(stores.map((s) => s.name + '|' + s.address)).size;
+}
+
+export const STORE_TOTAL = countStores(STORES);
+
+// 근처 가게를 어디서부터 잴지. 기기 위치를 받았고 서울스퀘어 근처일 때만 기기 위치를 쓴다.
+export function searchOrigin(location: UserLocation | null): NearbyStores['measuredFrom'] {
+  return location?.fromDevice === true && distanceMeters(location, BASE_LOCATION) <= NEAR_BASE_M ? 'device' : 'base';
+}
+
 export function findNearbyStores(menu: string, location: UserLocation | null): NearbyStores {
-  const useDevice =
-    location?.fromDevice === true && distanceMeters(location, BASE_LOCATION) <= NEAR_BASE_M;
+  const useDevice = searchOrigin(location) === 'device';
 
   const stores = STORES.filter((s) => s.menu === menu.trim())
     .map((s) => ({
