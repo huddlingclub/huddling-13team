@@ -414,6 +414,12 @@ input {
   animation: fishShimmer 1.2s linear infinite;
 }
 
+/* 메시지 박스(베이지 #F4EDE1)에서 근처를 검색하는 동안의 빈 줄: 박스보다 한 단계 진한 베이지 */
+.note-skeleton {
+  background: linear-gradient(100deg, #e4d6bf 30%, #f8f3ea 50%, #e4d6bf 70%) 100% 0 / 200% 100%;
+  animation: fishShimmer 1.2s linear infinite;
+}
+
 /* 진행 막대. 길이는 style의 animation-duration으로 정한다. */
 .fish-fill {
   transform-origin: left;
@@ -432,7 +438,8 @@ input {
   .fish-pop,
   .fish-wiggle,
   .fish-alert,
-  .fish-skeleton {
+  .fish-skeleton,
+  .note-skeleton {
     animation: none;
   }
 }

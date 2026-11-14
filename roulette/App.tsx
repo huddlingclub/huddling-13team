@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MenuFishing, type Screen } from './components/MenuFishing';
+import { MenuFishing, type FishingStatus } from './components/MenuFishing';
 import { DataNote } from './components/DataNote';
 import { RouletteManager } from './components/RouletteManager';
 import { useUserLocation } from './hooks/useUserLocation';
@@ -36,7 +36,7 @@ function loadItems(): RouletteItem[] {
 export default function App() {
   const [items, setItems] = useState<RouletteItem[]>(loadItems);
   const [editorOpen, setEditorOpen] = useState(false);
-  const [screen, setScreen] = useState<Screen>('home');
+  const [status, setStatus] = useState<FishingStatus | null>(null);
   const { location, requestLocation } = useUserLocation();
 
   // 항목 변경 시 로컬 스토리지에 저장
@@ -47,14 +47,16 @@ export default function App() {
 
   return (
     // 점심메뉴 낚시 한 화면. 데스크톱(1024px 이상)에서는 흰 배경 가운데에 430px 폭으로 두고,
-    // 왼쪽에 지금 화면이 쓰는 데이터(DB·API)를 알려 주는 메시지 박스를 띄운다.
+    // 왼쪽에 메시지 박스를 띄워 기기 시각으로 고른 식사 시간, 주변 검색 결과, 지금 화면이 쓰는 데이터(DB·API)를 알려 준다.
     <div className="min-h-screen bg-white">
       <div className="relative mx-auto w-full max-w-[768px] lg:w-[430px]">
       {/* 1024px 화면에서도 왼쪽 끝에 붙지 않게, 넓은 화면(1280px 이상)에서만 조금 더 크게 둔다 */}
-      <DataNote
-        screen={screen}
-        className="absolute right-[calc(100%+24px)] top-24 hidden w-[240px] lg:block xl:right-[calc(100%+32px)] xl:w-[264px]"
-      />
+      {status && (
+        <DataNote
+          status={status}
+          className="absolute right-[calc(100%+24px)] top-24 hidden w-[240px] lg:block xl:right-[calc(100%+32px)] xl:w-[264px]"
+        />
+      )}
       <main
         className="relative h-dvh w-full min-w-[320px] overflow-hidden bg-[#DCEBFA] lg:shadow-[0_8px_40px_rgba(0,0,0,0.08)]"
         data-name="점심메뉴 낚시"
@@ -64,7 +66,7 @@ export default function App() {
           location={location}
           onRequestLocation={requestLocation}
           onEditMenus={() => setEditorOpen(true)}
-          onScreenChange={setScreen}
+          onStatusChange={setStatus}
         />
 
         {/* 메뉴 편집 바텀시트 */}

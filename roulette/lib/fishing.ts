@@ -51,17 +51,26 @@ const TIME_COPY: [number, number, string, string, string][] = [
 const SHARED_SUB = '고민은 퍼디가 할게요. 던지기만 하세요';
 
 export interface Greeting {
-  chip: string; // 예: "늦은 점심 · 13:30–15:00"
+  meal: string; // 식사 시간 이름. 예: "늦은 점심"
+  range: string; // 그 식사 시간의 구간. 예: "13:30–15:00"
+  checkedAt: string; // 식사 시간을 고를 때 읽은 기기 시각. 예: "14:05"
   title: string; // 줄바꿈(\n) 포함
   sub: string;
 }
 
-// 홈에 들어올 때마다 부른다. 보조 문구는 대체 문구와 공통 문구 중 하나를 무작위로 고른다.
+// 홈에 들어올 때마다 기기 시각을 읽어 식사 시간을 고른다. 보조 문구는 대체 문구와 공통 문구 중 하나를 무작위로 고른다.
 export function timeGreeting(now: Date): Greeting {
   const h = now.getHours() + now.getMinutes() / 60;
   const [from, to, label, title, alt] = TIME_COPY.find(([f, t]) => h >= f && h < t) ?? TIME_COPY[3];
-  const clock = (v: number) => String(Math.floor(v) % 24).padStart(2, '0') + ':' + (v % 1 ? '30' : '00');
-  return { chip: label + ' · ' + clock(from) + '–' + clock(to), title, sub: Math.random() < 0.5 ? alt : SHARED_SUB };
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const clock = (v: number) => pad(Math.floor(v) % 24) + ':' + (v % 1 ? '30' : '00');
+  return {
+    meal: label,
+    range: clock(from) + '–' + clock(to),
+    checkedAt: pad(now.getHours()) + ':' + pad(now.getMinutes()),
+    title,
+    sub: Math.random() < 0.5 ? alt : SHARED_SUB,
+  };
 }
 
 // 낚시터 반경(미터). 가게 데이터는 서울스퀘어 1km 안이지만, 기기 위치에서 재면 2km도 의미가 있다.

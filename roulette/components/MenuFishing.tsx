@@ -2,7 +2,15 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import type { RouletteItem } from '../types';
 import type { UserLocation } from '../lib/location';
-import { distanceLine, naverSearchUrl, shortCategory, storeThumbUrl, type NearbyStore } from '../lib/stores';
+import {
+  countStores,
+  distanceLine,
+  naverSearchUrl,
+  searchOrigin,
+  shortCategory,
+  storeThumbUrl,
+  type NearbyStore,
+} from '../lib/stores';
 import { foodStyle } from '../lib/foodStyles';
 import {
   DEFAULT_RADIUS,
@@ -66,21 +74,30 @@ const CHIP = 'inline-block rounded-full border-[1.5px] px-3 py-[7px] text-[13px]
 const CARD = 'rounded-3xl border-2 border-b-[6px] border-fish-ink bg-white p-6';
 const PIXEL_CHIP = 'inline-block rounded-full border-[1.5px] px-3 py-[7px] font-pixel text-[9px] leading-4';
 
+// 데스크톱 왼쪽 메시지 박스가 보여 줄 지금 상태. 화면이나 검색 결과가 바뀔 때마다 알린다.
+export interface FishingStatus {
+  screen: Screen;
+  meal: string; // 기기 시각으로 고른 식사 시간. 예: "늦은 점심"
+  checkedAt: string; // 그때 읽은 기기 시각. 예: "14:05"
+  searching: boolean; // 홈에 처음 들어와 근처를 검색하는 동안 true
+  origin: 'device' | 'base'; // 근처를 잰 기준: 기기 위치 또는 서울스퀘어
+  radius: number; // 미터
+  menus: number; // 낚을 수 있는 메뉴 수
+  stores: number; // 그 메뉴를 파는 반경 안 가게 수
+  picked: { menu: string; stores: number; known: boolean } | null; // 낚은 메뉴와 그 메뉴의 반경 안 가게 수
+}
+
 interface MenuFishingProps {
   items: RouletteItem[];
   location: UserLocation | null;
   // 기기 위치는 낚싯대를 잡을 때 한 번 묻는다.
   onRequestLocation: () => void;
   onEditMenus: () => void;
-  // 화면이 바뀔 때마다 알린다. 데스크톱 왼쪽 데이터 메시지 박스가 쓴다.
-  onScreenChange?: (screen: Screen) => void;
+  onStatusChange?: (status: FishingStatus) => void;
 }
 
-export function MenuFishing({ items, location, onRequestLocation, onEditMenus, onScreenChange }: MenuFishingProps) {
+export function MenuFishing({ items, location, onRequestLocation, onEditMenus, onStatusChange }: MenuFishingProps) {
   const [screen, setScreen] = useState<Screen>('home');
-  useEffect(() => {
-    onScreenChange?.(screen);
-  }, [screen, onScreenChange]);
   const [greeting, setGreeting] = useState(() => timeGreeting(new Date()));
   const [radius, setRadius] = useState(DEFAULT_RADIUS);
   const [budget, setBudget] = useState(BUDGETS[1]);
@@ -103,6 +120,29 @@ export function MenuFishing({ items, location, onRequestLocation, onEditMenus, o
   const poolRef = useRef(pool);
   poolRef.current = pool;
   const picked = pick ? sea.find((m) => m.item.id === pick.id) ?? null : null;
+
+  // 메시지 박스에 알릴 상태. 값이 그대로면 같은 객체라 다시 알리지 않는다.
+  const origin = searchOrigin(location);
+  const pickedMenu = picked?.item.text ?? null;
+  const pickedStores = picked?.stores.length ?? 0;
+  const pickedKnown = picked?.known ?? false;
+  const status = useMemo<FishingStatus>(
+    () => ({
+      screen,
+      meal: greeting.meal,
+      checkedAt: greeting.checkedAt,
+      searching,
+      origin,
+      radius,
+      menus: pool.length,
+      stores: countStores(pool.flatMap((m) => m.stores)),
+      picked: pickedMenu === null ? null : { menu: pickedMenu, stores: pickedStores, known: pickedKnown },
+    }),
+    [screen, greeting, searching, origin, radius, pool, pickedMenu, pickedStores, pickedKnown],
+  );
+  useEffect(() => {
+    onStatusChange?.(status);
+  }, [status, onStatusChange]);
 
   // 화면이 바뀌면 새 화면으로 초점을 옮겨 스크린 리더가 화면 이름을 읽게 한다.
   const screenRef = useRef<HTMLDivElement>(null);
@@ -425,7 +465,7 @@ function HomeScreen({
   return (
     <section className="flex h-full flex-col bg-[#DCEBFA]">
       <div className="px-5 pt-6">
-        <span className={CHIP + ' border-fish-line bg-white text-fish-navy'}>{greeting.chip}</span>
+        <span className={CHIP + ' border-fish-line bg-white text-fish-navy'}>{greeting.meal + ' · ' + greeting.range}</span>
         <h1 className="mt-3 whitespace-pre-line break-keep text-[28px] font-bold leading-[1.3] tracking-[-0.02em]">{greeting.title}</h1>
         <p className="mt-1.5 break-keep text-[14px] leading-5 text-fish-sub">{greeting.sub}</p>
       </div>
