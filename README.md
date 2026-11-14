@@ -11,7 +11,7 @@
 
 - 저장소 클론 완료 (2026-11-14 11:03 KST)
 - 컨셉 논의 진행 중
-- 최종 업데이트: 2026-11-14 13:30 KST
+- 최종 업데이트: 2026-11-14 14:00 KST
 
 ## 일정
 
@@ -163,6 +163,10 @@
 |---|---|
 | [roulette/](roulette/) | 돌림판 앱 (Vite + React). 점심 메뉴 룰렛의 바탕 |
 
+### 작업 브랜치
+
+- [이수진/에셋-아이콘](https://github.com/huddlingclub/huddling-13team/tree/%EC%9D%B4%EC%88%98%EC%A7%84/%EC%97%90%EC%85%8B-%EC%95%84%EC%9D%B4%EC%BD%98) (이수진, 13:58 KST)
+
 ## 참고 링크 · 디자인
 
 - [DesignBookmark](https://designbookmark.com/): 바이브 디자인할 때 쓸 디자인 도구와 리소스 2,000여 개 모음
@@ -177,3 +181,5 @@
 - [clipfriends.club/huddling](https://clipfriends.club/huddling/): 준이 공유한 링크 (13:07 KST)
 - [김연정 Figma (eXCFrame 고도화)](https://www.figma.com/design/H8ixrCTB4yIGAxUEqVv7WQ/eXCFrame-%EA%B3%A0%EB%8F%84%ED%99%94?node-id=307-2346&t=QMGNielYkpJSgEmJ-1): 김연정 공유 (13:19 KST)
 - jhj3697510이 Slack에 움직이는 배경 이미지를 공유함 (13:25 KST, "이건 움직이는 배경입니다"). 이미지는 Slack에만 있음
+- jhj3697510이 Slack에 파비콘 이미지를 공유함 (13:43 KST). 이미지는 Slack에만 있음
+- 김연정이 Slack에 디자인 압축파일(zip)을 공유함 (13:48 KST). 파일은 Slack에만 있음
