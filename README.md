@@ -12,7 +12,10 @@
 - 저장소 클론 완료 (2026-11-14 11:03 KST)
 - 컨셉 논의 진행 중
 - 점심메뉴 낚시를 [clipfriends.club/huddling](https://clipfriends.club/huddling/)에 배포함 (마지막 배포 2026-11-14 16:28 KST). 하루 작업은 아래 [작업 기록](#작업-기록-2026-11-14)에 있습니다
-- 최종 업데이트: 2026-11-14 14:00 KST
+- 서비스([clipfriends.club/huddling](https://clipfriends.club/huddling/))는 2026-11-14 24:00 KST까지만 웹에 공개 (준, 18:13 KST)
+- 해커톤에서 팀이 상을 받음 (18:20 KST Slack 언급)
+- 16:03~18:20 KST 사이 팀원들의 마무리 인사가 오감
+- 최종 업데이트: 2026-11-14 18:25 KST
 
 ## 일정
 
@@ -262,7 +265,7 @@ PR #2는 연 뒤에도 같은 브랜치에서 작업을 이어 갔습니다. 우
 
 ### 배포
 
-`.github/workflows/deploy-roulette.yml`(Deploy roulette)이 `main`의 `roulette/`가 바뀔 때마다 빌드하고 `wrangler deploy`로 Worker `huddling-roulette`에 올립니다. 이 Worker는 `clipfriends.club/huddling`과 `/huddling/*`만 맡고, 도메인의 다른 경로는 기존 앱 그대로입니다. PR #1을 열기 전에 `joon-infra`를 `wrangler deploy`로 한 번 직접 올렸고, 그 뒤로는 모두 Actions가 배포했습니다.
+`.github/workflows/deploy-roulette.yml`(Deploy roulette)이 `main`의 `roulette/`가 바뀔 때마다 빌드하고 `wrangler deploy`로 Worker `huddling-roulette`에 올립니다. 이 Worker는 `clipfriends.club/huddling`과 `/huddling/*`만 맡고, 도메인의 다른 경로는 기존 앱 그대로입니다. PR #1을 열기 전에 `joon-infra`를 `wrangler deploy`로 한 번 직접 올렸고, 그 뒤로는 모두 Actions가 배포했습니다. 서비스는 2026-11-14 24:00 KST까지만 웹에 공개합니다 (준, 18:13 KST).
 
 | 시간 | 계기 | 결과 |
 |---|---|---|
