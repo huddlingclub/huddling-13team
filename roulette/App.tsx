@@ -12,18 +12,20 @@ interface RouletteItem {
 
 const ITEMS_KEY = 'rouletteItems';
 const VERSION_KEY = 'rouletteVersion';
-const CURRENT_VERSION = '7.0'; // 로컬 스토리지 초기화 버전
+const CURRENT_VERSION = '8.0'; // 로컬 스토리지 초기화 버전. 기본 항목을 바꾸면 올린다.
 
+// 기본 점심 메뉴. 색상은 RouletteManager의 COLORS 앞쪽 5개와 같다.
 const DEFAULT_ITEMS: RouletteItem[] = [
-  { id: '1', text: '항목 1', color: '#D1D5DB' },
-  { id: '2', text: '항목 2', color: '#E5E7EB' },
-  { id: '3', text: '항목 3', color: '#F3F4F6' },
-  { id: '4', text: '항목 4', color: '#E5E7EB' },
-  { id: '5', text: '항목 5', color: '#D1D5DB' }
+  { id: '1', text: '김치찌개', color: '#FF6B6B' },
+  { id: '2', text: '돈까스', color: '#4ECDC4' },
+  { id: '3', text: '국밥', color: '#45B7D1' },
+  { id: '4', text: '쌀국수', color: '#96CEB4' },
+  { id: '5', text: '샐러드', color: '#FECA57' }
 ];
 
 // 첫 렌더링 전에 로컬 스토리지에서 항목을 읽는다.
 // effect에서 읽으면 StrictMode의 이중 실행 때 빈 배열이 먼저 저장되어 항목이 초기화된다.
+// StrictMode가 이 함수를 두 번 부르므로 여기서는 읽기만 하고, 저장은 아래 effect에서 한다.
 function loadItems(): RouletteItem[] {
   if (localStorage.getItem(VERSION_KEY) === CURRENT_VERSION) {
     try {
@@ -33,7 +35,6 @@ function loadItems(): RouletteItem[] {
       console.error('Failed to load items from localStorage:', e);
     }
   }
-  localStorage.setItem(VERSION_KEY, CURRENT_VERSION);
   return DEFAULT_ITEMS;
 }
 
@@ -120,6 +121,7 @@ export default function App() {
   // 항목 변경 시 로컬 스토리지에 저장
   useEffect(() => {
     localStorage.setItem(ITEMS_KEY, JSON.stringify(items));
+    localStorage.setItem(VERSION_KEY, CURRENT_VERSION);
   }, [items]);
 
   const handleSpin = useCallback(() => {

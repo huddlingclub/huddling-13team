@@ -39,3 +39,4 @@ npm run dev
 - 아이콘 경로 파일을 `imports/svg-ib3k91vro6.ts`에서 `assets/svgPaths.ts`로 옮기고, 쓰는 아이콘 하나만 남겼습니다.
 - 개발 모드에서 새로고침하면 추가한 항목이 기본값으로 돌아가던 버그를 고쳤습니다. 항목을 effect에서 읽지 않고 첫 렌더링 전에 읽도록 바꿨습니다.
 - 이 프로젝트의 Tailwind 3에서는 동작하지 않는 v4 전용 CSS 문법(`@theme`, `@custom-variant`)을 지웠습니다. 화면에는 변화가 없습니다.
+- 기본 항목을 "항목 1~5"에서 점심 메뉴 5개(김치찌개, 돈까스, 국밥, 쌀국수, 샐러드)로 바꿨습니다. 기본 항목은 [App.tsx](App.tsx)의 `DEFAULT_ITEMS`에서 고치고, 고친 뒤에는 `CURRENT_VERSION`을 올려야 이미 저장된 항목이 새 기본값으로 바뀝니다.
